@@ -18,7 +18,6 @@ export function useGroupsFallback() {
   const fetchGroups = async () => {
     try {
       setLoading(true)
-      // Tenta buscar com status primeiro, se falhar busca sem status
       const { data, error } = await supabase
         .from('groups')
         .select(`
@@ -29,10 +28,8 @@ export function useGroupsFallback() {
         .order('name')
 
       if (error) {
-        // Se deu erro, pode ser que a coluna status não existe
         console.warn('Error fetching groups with status, trying without:', error.message)
         
-        // Tenta buscar sem a coluna status
         const { data: fallbackData, error: fallbackError } = await supabase
           .from('groups')
           .select(`
@@ -52,7 +49,6 @@ export function useGroupsFallback() {
           throw fallbackError
         }
 
-        // Adiciona status 'approved' para grupos existentes
         const groupsWithStatus = (fallbackData || []).map(group => ({
           ...group,
           status: 'approved' as const
@@ -85,10 +81,9 @@ export function useGroupsFallback() {
         throw error
       }
       
-      // Adiciona status localmente
       const groupWithStatus = {
         ...data,
-        status: 'approved' as const // Assume aprovado se não há sistema de aprovação
+        status: 'approved' as const
       }
       
       setGroups(prev => [...prev, groupWithStatus])
@@ -101,7 +96,6 @@ export function useGroupsFallback() {
 
   const updateGroup = async (id: string, updates: GroupUpdate) => {
     try {
-      // Remove status das atualizações se não existir na tabela
       const { status, ...updatesWithoutStatus } = updates as any
       
       const { data, error } = await supabase
@@ -116,7 +110,6 @@ export function useGroupsFallback() {
         throw error
       }
       
-      // Adiciona status localmente
       const groupWithStatus = {
         ...data,
         status: 'approved' as const
@@ -150,7 +143,6 @@ export function useGroupsFallback() {
     }
   }
 
-  // Funções de aprovação não funcionam sem a coluna status
   const approveGroup = async (id: string) => {
     console.warn('Approval system not available without status column')
     return { error: new Error('Approval system not available') }

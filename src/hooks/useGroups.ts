@@ -81,7 +81,6 @@ export function useGroups() {
       if (userError && userError.code === 'PGRST116') {
         console.log('User not found in users table, creating user profile')
         
-        // Busca dados do usuário na tabela auth.users
         const { data: authUser } = await supabase.auth.getUser()
         
         if (authUser.user) {
@@ -104,7 +103,6 @@ export function useGroups() {
         throw userError
       }
 
-      // Primeiro tenta com status
       let groupData = {
         ...group,
         status: group.status || 'pending'
@@ -116,7 +114,6 @@ export function useGroups() {
         .select()
         .single()
 
-      // Se deu erro por causa da coluna status, tenta sem ela
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, creating group without status')
         
@@ -133,7 +130,6 @@ export function useGroups() {
           throw result.error
         }
 
-        // Adiciona status localmente como 'approved'
         data = {
           ...result.data,
           status: 'approved' as const
