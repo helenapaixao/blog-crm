@@ -133,7 +133,7 @@ export default function ProfilePage() {
             </div>
             <nav className="flex items-center space-x-4">
               <Link href="/">
-                <Button variant="outline">Voltar ao Blog</Button>
+                <Button variant="outline">Voltar ao Feed</Button>
               </Link>
               <Link href="/dashboard">
                 <Button variant="outline">Dashboard</Button>

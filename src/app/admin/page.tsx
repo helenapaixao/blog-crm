@@ -85,7 +85,7 @@ export default function AdminPage() {
             </div>
             <nav className="flex items-center space-x-4">
               <Link href="/">
-                <Button variant="outline">Voltar ao Blog</Button>
+                <Button variant="outline">Voltar ao Feed</Button>
               </Link>
               <Link href="/admin/groups">
                 <Button variant="outline">Gerenciar Grupos</Button>
