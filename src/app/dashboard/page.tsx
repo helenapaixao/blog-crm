@@ -286,13 +286,13 @@ export default function DashboardPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            {formatDate(post.created_at, 'dd MMM yyyy')}
                           </span>
                           {post.published_at && (
                             <>
                               <span>•</span>
                               <span>
-                                Publicado em {format(new Date(post.published_at), 'dd MMM yyyy', { locale: ptBR })}
+                                Publicado em {formatDate(post.published_at, 'dd MMM yyyy')}
                               </span>
                             </>
                           )}
@@ -367,7 +367,7 @@ export default function DashboardPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            Criado em {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            Criado em {formatDate(post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                         <Link href={`/post/${post.id}`}>
@@ -422,7 +422,7 @@ export default function DashboardPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            Enviado em {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            Enviado em {formatDate(post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                         <Link href={`/post/${post.id}`}>
@@ -485,7 +485,7 @@ export default function DashboardPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            Publicado em {format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            Publicado em {formatDate(post.published_at || post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                         <div className="flex items-center space-x-4">

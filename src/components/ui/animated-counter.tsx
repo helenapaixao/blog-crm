@@ -10,11 +10,12 @@ interface AnimatedCounterProps {
 }
 
 export function AnimatedCounter({ end, duration = 2000, suffix = '', className = '' }: AnimatedCounterProps) {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(end)
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
+    setCount(0) // Start animation from 0 only on client
   }, [])
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export function AnimatedCounter({ end, duration = 2000, suffix = '', className =
 
   return (
     <span className={className}>
-      {isClient ? count.toLocaleString() : end.toLocaleString()}{suffix}
+      {count.toLocaleString()}{suffix}
     </span>
   )
 }

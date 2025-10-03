@@ -7,6 +7,7 @@ import { usePosts } from '@/hooks/usePosts'
 import { useGroups } from '@/hooks/useGroups'
 import { Sidebar } from '@/components/ui/sidebar'
 import { supabase } from '@/lib/supabase'
+import { formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -212,13 +213,10 @@ export default function GroupPage() {
                       {group.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In porttitor pretium orci, sed maximus lorem consectetur at.'}
                     </p>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-4 w-4" />
-                        <span>{groupPosts.length} membros</span>
-                      </div>
+                     
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
-                        <span>Criado em {format(new Date(group.created_at), 'MMM yyyy', { locale: ptBR })}</span>
+                        <span>Criado em {formatDate(group.created_at, 'MMM yyyy')}</span>
                       </div>
                     </div>
                   </div>

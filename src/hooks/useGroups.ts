@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/lib/supabase'
 
@@ -11,11 +11,7 @@ export function useGroups() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchGroups()
-  }, [])
-
-  const fetchGroups = async () => {
+  const fetchGroups = useCallback(async () => {
     try {
       setLoading(true)
       let { data, error } = await supabase
@@ -48,23 +44,24 @@ export function useGroups() {
         if (result.error) {
           throw result.error
         }
-
-        data = (result.data || []).map(group => ({
-          ...group,
-          status: 'approved' as const
-        }))
-        error = null
+        
+        data = result.data
       } else if (error) {
         throw error
       }
-      
+
       setGroups(data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchGroups()
+  }, [fetchGroups])
+
 
   const createGroup = async (group: GroupInsert) => {
     try {

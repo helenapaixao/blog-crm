@@ -508,7 +508,7 @@ export default function GroupsPage() {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-500">Aprovado em:</span>
                           <span className="font-medium">
-                            {format(new Date(group.updated_at), 'dd/MM/yyyy', { locale: ptBR })}
+                            {formatDate(group.updated_at, 'dd/MM/yyyy')}
                           </span>
                         </div>
                         <div className="pt-2">
@@ -586,7 +586,7 @@ export default function GroupsPage() {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-500">Rejeitado em:</span>
                           <span className="font-medium">
-                            {format(new Date(group.updated_at), 'dd/MM/yyyy', { locale: ptBR })}
+                            {formatDate(group.updated_at, 'dd/MM/yyyy')}
                           </span>
                         </div>
                       </div>

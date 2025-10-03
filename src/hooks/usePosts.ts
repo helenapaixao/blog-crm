@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/lib/supabase'
 
@@ -22,11 +22,7 @@ export function usePosts(groupId?: string, status?: string) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchPosts()
-  }, [groupId, status])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true)
       let query = supabase
@@ -57,7 +53,11 @@ export function usePosts(groupId?: string, status?: string) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [groupId, status])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
 
   const createPost = async (post: PostInsert) => {
     try {

@@ -23,8 +23,7 @@ import {
   X
 } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -235,7 +234,7 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-3">
                     <Calendar className="h-5 w-5 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      Membro desde {format(new Date(user.created_at), 'MMMM yyyy', { locale: ptBR })}
+                      Membro desde {formatDate(user.created_at, 'MMMM yyyy')}
                     </span>
                   </div>
                 </div>
@@ -328,7 +327,7 @@ export default function ProfilePage() {
                               <span>{post.group?.name}</span>
                               <span>•</span>
                               <span>
-                                {format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                                {formatDate(post.published_at || post.created_at, 'dd MMM yyyy')}
                               </span>
                             </div>
                             <div className="flex items-center space-x-4">
@@ -403,7 +402,7 @@ export default function ProfilePage() {
                               <span>{post.group?.name}</span>
                               <span>•</span>
                               <span>
-                                {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                                {formatDate(post.created_at, 'dd MMM yyyy')}
                               </span>
                             </div>
                             <div className="flex items-center space-x-4">

@@ -280,7 +280,7 @@ export default function AdminPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            {format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            {formatDate(post.published_at || post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                         <div className="flex items-center space-x-4">
