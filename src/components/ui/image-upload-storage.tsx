@@ -142,13 +142,7 @@ export function ImageUploadStorage({
       
       {/* URL Input */}
       <div className="flex space-x-2">
-        <Input
-          type="url"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="flex-1"
-        />
+      
         {value && (
           <Button
             type="button"
@@ -198,7 +192,7 @@ export function ImageUploadStorage({
               disabled={isUploading}
             >
               <ImageIcon className="h-4 w-4 mr-2" />
-              Selecionar do PC
+              Selecionar
             </Button>
             
             <input

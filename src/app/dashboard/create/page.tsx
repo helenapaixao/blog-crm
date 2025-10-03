@@ -122,7 +122,7 @@ export default function CreatePostPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Nova Postagem</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Postar</h1>
             </div>
             <nav className="flex items-center space-x-4">
               <Link href="/dashboard">
@@ -155,7 +155,7 @@ export default function CreatePostPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Resumo (opcional)</Label>
+                <Label htmlFor="excerpt">Texto do post(opcional)</Label>
                 <Textarea
                   id="excerpt"
                   value={formData.excerpt}

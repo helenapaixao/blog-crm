@@ -4,6 +4,11 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
+interface UserProfile {
+  full_name: string
+  avatar_url: string
+}
+
 interface AuthContextType {
   user: User | null
   session: Session | null
@@ -12,6 +17,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   isAdmin: boolean
+  userProfile: UserProfile | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -21,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
 
   useEffect(() => {
     // Get initial session
@@ -29,6 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       if (session?.user) {
         checkUserRole(session.user.id)
+        fetchUserProfile(session.user.id)
       }
       setLoading(false)
     })
@@ -41,6 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       if (session?.user) {
         checkUserRole(session.user.id)
+        fetchUserProfile(session.user.id)
       } else {
         setIsAdmin(false)
       }
@@ -77,6 +86,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Error checking user role:', error)
       // Em caso de erro, assume role 'user' por segurança
       setIsAdmin(false)
+    }
+  }
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('full_name, avatar_url')
+        .eq('id', userId)
+        .maybeSingle()
+
+      if (error) {
+        console.error('Error fetching user profile:', error.message || error)
+        setUserProfile(null)
+        return
+      }
+
+      setUserProfile(data)
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+      setUserProfile(null)
     }
   }
 
@@ -133,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     isAdmin,
+    userProfile,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
