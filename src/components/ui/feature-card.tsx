@@ -12,7 +12,12 @@ interface FeatureCardProps {
 
 export function FeatureCard({ icon, title, description, index }: FeatureCardProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,13 +38,13 @@ export function FeatureCard({ icon, title, description, index }: FeatureCardProp
         observer.unobserve(cardRef.current)
       }
     }
-  }, [index])
+  }, [index, isClient])
 
   return (
     <Card 
       ref={cardRef}
       className={`group hover:shadow-xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm transform ${
-        isVisible 
+        isClient && isVisible 
           ? 'translate-y-0 opacity-100' 
           : 'translate-y-8 opacity-0'
       }`}

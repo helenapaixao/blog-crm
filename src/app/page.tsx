@@ -225,7 +225,9 @@ export default function Home() {
                             </Avatar>
                             <span className="text-sm font-medium">{post.author?.full_name || 'Usuário'}</span>
                             <span className="text-xs text-gray-500">@{(post.author?.full_name || 'user').toLowerCase().replace(/\s/g, '')}</span>
-                            <span className="text-xs text-gray-500">now</span>
+                            <span className="text-xs text-gray-500">
+                              {post.published_at ? format(new Date(post.published_at), 'dd/MM/yyyy', { locale: ptBR }) : 'Agora'}
+                            </span>
                           </div>
                           
                           <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">

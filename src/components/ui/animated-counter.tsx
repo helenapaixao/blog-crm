@@ -11,8 +11,15 @@ interface AnimatedCounterProps {
 
 export function AnimatedCounter({ end, duration = 2000, suffix = '', className = '' }: AnimatedCounterProps) {
   const [count, setCount] = useState(0)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isClient) return
+
     let startTime: number
     let animationFrame: number
 
@@ -34,11 +41,11 @@ export function AnimatedCounter({ end, duration = 2000, suffix = '', className =
         cancelAnimationFrame(animationFrame)
       }
     }
-  }, [end, duration])
+  }, [end, duration, isClient])
 
   return (
     <span className={className}>
-      {count.toLocaleString()}{suffix}
+      {isClient ? count.toLocaleString() : end.toLocaleString()}{suffix}
     </span>
   )
 }

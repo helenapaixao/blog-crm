@@ -68,7 +68,7 @@ export function ImageUploadStorage({
       return
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
       toast.error('A imagem deve ter no máximo 5MB')
       return
     }
@@ -76,11 +76,13 @@ export function ImageUploadStorage({
     setIsUploading(true)
 
     try {
-      // Generate unique filename
       const fileExt = file.name.split('.').pop()
-      const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2)}`
+      const fileName = `${userId}/${uniqueId}.${fileExt}`
       
-      // Upload to Supabase Storage
+      console.log('Uploading file:', fileName)
+      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+      
       const { data, error } = await supabase.storage
         .from('images')
         .upload(fileName, file, {
@@ -92,7 +94,6 @@ export function ImageUploadStorage({
         throw error
       }
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('images')
         .getPublicUrl(fileName)
@@ -102,7 +103,8 @@ export function ImageUploadStorage({
       
     } catch (error) {
       console.error('Error uploading image:', error)
-      toast.error('Erro ao carregar a imagem')
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+      toast.error(`Erro ao carregar a imagem: ${errorMessage}`)
     } finally {
       setIsUploading(false)
     }
@@ -140,7 +142,6 @@ export function ImageUploadStorage({
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
       
-      {/* URL Input */}
       <div className="flex space-x-2">
       
         {value && (
@@ -156,7 +157,6 @@ export function ImageUploadStorage({
         )}
       </div>
 
-      {/* File Upload Area */}
       <Card 
         className={`border-2 border-dashed transition-colors ${
           isDragOver 
@@ -206,7 +206,6 @@ export function ImageUploadStorage({
         </CardContent>
       </Card>
 
-      {/* Image Preview */}
       {value && (
         <div className="relative group">
           <div className="relative">
@@ -242,7 +241,6 @@ export function ImageUploadStorage({
         </div>
       )}
 
-      {/* Help Text */}
       <div className="text-xs text-gray-500 space-y-1">
         <p>Formatos aceitos: JPG, PNG, GIF, WebP. Tamanho máximo: 5MB.</p>
         <p>Você pode colar uma URL ou arrastar um arquivo do seu computador.</p>
