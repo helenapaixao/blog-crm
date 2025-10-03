@@ -70,6 +70,40 @@ export function useGroups() {
 
   const createGroup = async (group: GroupInsert) => {
     try {
+      // Primeiro verifica se o usuário existe na tabela users
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', group.created_by)
+        .single()
+
+      // Se o usuário não existe, cria ele na tabela users
+      if (userError && userError.code === 'PGRST116') {
+        console.log('User not found in users table, creating user profile')
+        
+        // Busca dados do usuário na tabela auth.users
+        const { data: authUser } = await supabase.auth.getUser()
+        
+        if (authUser.user) {
+          const { error: createUserError } = await supabase
+            .from('users')
+            .insert({
+              id: authUser.user.id,
+              email: authUser.user.email || '',
+              full_name: authUser.user.user_metadata?.full_name || null,
+              role: 'user'
+            })
+
+          if (createUserError) {
+            console.error('Error creating user profile:', createUserError)
+            throw createUserError
+          }
+        }
+      } else if (userError) {
+        console.error('Error checking user:', userError)
+        throw userError
+      }
+
       // Primeiro tenta com status
       let groupData = {
         ...group,
