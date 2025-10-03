@@ -11,13 +11,22 @@ import { Heart, MessageCircle, Eye, Calendar, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
-  const { user, isAdmin, signOut } = useAuth()
+  const { user, isAdmin, signOut, loading } = useAuth()
   const { posts, loading: postsLoading } = usePosts(undefined, 'published')
   const { groups } = useGroups()
+  const router = useRouter()
 
-  if (postsLoading) {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/landing')
+    }
+  }, [loading, user, router])
+
+  if (loading || postsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -26,6 +35,10 @@ export default function Home() {
         </div>
       </div>
     )
+  }
+
+  if (!user) {
+    return null
   }
 
   return (
