@@ -1,0 +1,15 @@
+{
+  "editor.snippetSuggestions": "none",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.wordBasedSuggestions": "off",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  }
+}

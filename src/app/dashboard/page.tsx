@@ -18,24 +18,65 @@ import {
   Heart,
   MessageCircle,
   Users,
+  Trash2,
   LogOut
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth()
-  const { posts, loading: postsLoading } = usePosts()
+  const { posts, loading: postsLoading, deletePost } = usePosts()
   const router = useRouter()
+  
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean
+    postId: string | null
+    postTitle: string
+  }>({
+    isOpen: false,
+    postId: null,
+    postTitle: ''
+  })
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/auth/login')
     }
   }, [loading, user, router])
+
+  const openDeleteModal = (postId: string, postTitle: string) => {
+    setDeleteModal({
+      isOpen: true,
+      postId,
+      postTitle
+    })
+  }
+
+  const closeDeleteModal = () => {
+    setDeleteModal({
+      isOpen: false,
+      postId: null,
+      postTitle: ''
+    })
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.postId) return
+
+    const { error } = await deletePost(deleteModal.postId)
+    if (error) {
+      toast.error('Erro ao deletar postagem: ' + (error as any).message)
+    } else {
+      toast.success('Postagem deletada com sucesso!')
+    }
+    closeDeleteModal()
+  }
 
   if (loading || postsLoading) {
     return (
@@ -72,7 +113,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -109,7 +149,6 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
         <div className="mb-8">
           <div className="flex items-center space-x-4">
             <Avatar className="h-16 w-16">
@@ -129,7 +168,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -184,7 +222,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Posts Management */}
         <Tabs defaultValue="all" className="space-y-6">
           <TabsList>
             <TabsTrigger value="all">
@@ -314,6 +351,14 @@ export default function DashboardPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                           </Link>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openDeleteModal(post.id, post.title)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     </CardHeader>
@@ -424,6 +469,14 @@ export default function DashboardPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                           </Link>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openDeleteModal(post.id, post.title)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     </CardHeader>
@@ -489,6 +542,14 @@ export default function DashboardPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                           </Link>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openDeleteModal(post.id, post.title)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     </CardHeader>
@@ -515,6 +576,16 @@ export default function DashboardPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Deletar Postagem"
+        description="Esta ação irá remover permanentemente a postagem e todos os dados relacionados."
+        itemName={deleteModal.postTitle}
+      />
     </div>
   )
 }

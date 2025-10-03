@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 
 export function useLikes(postId: string) {
-  const [likes, setLikes] = useState<any[]>([])
+  const [likes, setLikes] = useState<{ id: string; user_id: string; post_id: string }[]>([])
   const [userLiked, setUserLiked] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

@@ -117,7 +117,7 @@ export function useGroups() {
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, creating group without status')
         
-        const { status, ...groupWithoutStatus } = groupData as any
+        const { status, ...groupWithoutStatus } = groupData as Omit<typeof groupData, 'status'>
         
         const result = await supabase
           .from('groups')
@@ -161,7 +161,7 @@ export function useGroups() {
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, updating without status')
         
-        const { status, ...updatesWithoutStatus } = updates as any
+        const { status, ...updatesWithoutStatus } = updates as Omit<typeof updates, 'status'>
         
         const result = await supabase
           .from('groups')
@@ -214,7 +214,7 @@ export function useGroups() {
       const result = await updateGroup(id, { status: 'approved' })
       
       // Se deu erro por causa da coluna status, apenas atualiza localmente
-      if (result.error && (result.error as any).code === 'PGRST204') {
+      if (result.error && (result.error as { code?: string }).code === 'PGRST204') {
         console.log('Status column not found, updating locally')
         setGroups(prev => prev.map(group => 
           group.id === id ? { ...group, status: 'approved' } : group
@@ -233,7 +233,7 @@ export function useGroups() {
       const result = await updateGroup(id, { status: 'rejected' })
       
       // Se deu erro por causa da coluna status, apenas atualiza localmente
-      if (result.error && (result.error as any).code === 'PGRST204') {
+      if (result.error && (result.error as { code?: string }).code === 'PGRST204') {
         console.log('Status column not found, updating locally')
         setGroups(prev => prev.map(group => 
           group.id === id ? { ...group, status: 'rejected' } : group

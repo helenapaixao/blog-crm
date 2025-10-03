@@ -11,8 +11,8 @@ type Post = Database['public']['Tables']['posts']['Row'] & {
     name: string
     slug: string
   }
-  likes?: any[]
-  comments?: any[]
+  likes?: { id: string; user_id: string }[]
+  comments?: { id: string; content: string; author_id: string }[]
 }
 type PostInsert = Database['public']['Tables']['posts']['Insert']
 type PostUpdate = Database['public']['Tables']['posts']['Update']

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useComments } from '@/hooks/useComments'
 import { useLikes } from '@/hooks/useLikes'
+import { usePosts } from '@/hooks/usePosts'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,13 +19,16 @@ import {
   Calendar, 
   User, 
   Tag,
-  ArrowLeft
+  ArrowLeft,
+  Trash2,
+  Edit
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { toast } from 'sonner'
 import { Database } from '@/lib/supabase'
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
 
 type Post = Database['public']['Tables']['posts']['Row'] & {
   author: {
@@ -39,14 +43,17 @@ type Post = Database['public']['Tables']['posts']['Row'] & {
 
 export default function PostPage() {
   const params = useParams()
+  const router = useRouter()
   const { user } = useAuth()
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
   const [commentText, setCommentText] = useState('')
   const [submittingComment, setSubmittingComment] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   
   const { comments, createComment, loading: commentsLoading } = useComments(params.id as string)
   const { likes, userLiked, likesCount, toggleLike } = useLikes(params.id as string)
+  const { deletePost } = usePosts()
 
   useEffect(() => {
     fetchPost()
@@ -72,6 +79,26 @@ export default function PostPage() {
       toast.error('Erro ao carregar postagem')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const openDeleteModal = () => {
+    setShowDeleteModal(true)
+  }
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!post) return
+
+    const { error } = await deletePost(post.id)
+    if (error) {
+      toast.error('Erro ao deletar postagem: ' + (error as any).message)
+    } else {
+      toast.success('Postagem deletada com sucesso!')
+      router.push('/dashboard')
     }
   }
 
@@ -187,9 +214,28 @@ export default function PostPage() {
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {post.title}
-          </h1>
+          <div className="flex justify-between items-start mb-4">
+            <h1 className="text-4xl font-bold text-gray-900 flex-1">
+              {post.title}
+            </h1>
+            {user && post.author_id === user.id && (
+              <div className="flex items-center space-x-2 ml-4">
+                <Link href={`/dashboard/edit/${post.id}`}>
+                  <Button size="sm" variant="outline">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={openDeleteModal}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
 
           {post.excerpt && (
             <p className="text-xl text-gray-600 mb-6">
@@ -360,6 +406,16 @@ export default function PostPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Deletar Postagem"
+        description="Esta ação irá remover permanentemente a postagem e todos os dados relacionados."
+        itemName={post?.title || ''}
+      />
     </div>
   )
 }

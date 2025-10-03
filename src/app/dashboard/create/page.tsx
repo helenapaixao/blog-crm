@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { ImageUploadStorage } from '@/components/ui/image-upload-storage'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { RichTextEditor } from '@/components/editor/RichTextEditor'
 import { Badge } from '@/components/ui/badge'
@@ -68,7 +69,7 @@ export default function CreatePostPage() {
     })
 
     if (error) {
-      toast.error('Erro ao salvar postagem: ' + error.message)
+      toast.error('Erro ao salvar postagem: ' + (error as any).message)
     } else {
       toast.success(
         status === 'draft' 
@@ -117,7 +118,6 @@ export default function CreatePostPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -185,16 +185,13 @@ export default function CreatePostPage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="coverImage">Imagem de Capa (URL)</Label>
-                <Input
-                  id="coverImage"
-                  type="url"
-                  value={formData.coverImage}
-                  onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))}
-                  placeholder="https://exemplo.com/imagem.jpg"
-                />
-              </div>
+              <ImageUploadStorage
+                value={formData.coverImage}
+                onChange={(url) => setFormData(prev => ({ ...prev, coverImage: url }))}
+                label="Imagem de Capa"
+                placeholder="URL da imagem ou arraste um arquivo do seu PC"
+                userId={user?.id}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="tags">Tags</Label>
