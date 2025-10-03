@@ -26,8 +26,7 @@ import {
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { formatDate } from '@/lib/utils'
 
 export default function GroupsPage() {
   const { isAdmin, loading, user } = useAuth()
@@ -412,7 +411,7 @@ export default function GroupsPage() {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-500">Data:</span>
                           <span className="font-medium">
-                            {format(new Date(group.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+                            {formatDate(group.created_at, 'dd/MM/yyyy')}
                           </span>
                         </div>
                         

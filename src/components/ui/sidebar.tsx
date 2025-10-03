@@ -24,7 +24,9 @@ import {
   Camera,
   Book,
   Heart,
-  Zap
+  Zap,
+  LogOut,
+  Crown
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -33,7 +35,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
-  const { user, userProfile } = useAuth()
+  const { user, userProfile, isAdmin, signOut } = useAuth()
   const { groups, getGroupStats } = useGroups()
   const [groupStats, setGroupStats] = useState<Record<string, { postsCount: number; membersCount: number }>>({})
 
@@ -104,17 +106,33 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {user && (
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={userProfile?.avatar_url || ''} />
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                  {userProfile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={userProfile?.avatar_url || ''} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    {userProfile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                {isAdmin && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                    <Crown className="h-3 w-3 text-white" />
+                  </div>
+                )}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {userProfile?.full_name || user.email}
+                <div className="flex items-center space-x-2">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {userProfile?.full_name || user.email}
+                  </p>
+                  {isAdmin && (
+                    <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-800">
+                      Admin
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  {isAdmin ? 'Administrador' : 'Membro ativo'}
                 </p>
-                <p className="text-xs text-gray-500">Membro ativo</p>
               </div>
             </div>
           </div>
@@ -203,6 +221,23 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             )}
           </div>
         </div>
+
+        {/* Logout Button */}
+        {user && (
+          <div className="p-4 border-t border-gray-100">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start h-12 text-left text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={signOut}
+            >
+              <LogOut className="h-5 w-5 mr-3" />
+              <div>
+                <div className="font-medium">Sair</div>
+                <div className="text-xs text-red-500">Fazer logout</div>
+              </div>
+            </Button>
+          </div>
+        )}
       </div>
     </>
   )

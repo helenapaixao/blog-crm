@@ -5,8 +5,7 @@ import { usePosts } from '@/hooks/usePosts'
 import { useGroups } from '@/hooks/useGroups'
 import { Sidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { 
   Heart, 
@@ -26,8 +25,7 @@ import {
   Reply
 } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { formatDate } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -63,56 +61,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden"
-            >
-              {sidebarOpen ? <X className="h-5 w-5" /> : <HomeIcon className="h-5 w-5" />}
-            </Button>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">3P</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">3Pontos</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {user && (
-              <>
-                <Link href="/dashboard">
-                  <Button variant="outline" size="sm">Dashboard</Button>
-                </Link>
-                {isAdmin && (
-                  <Link href="/admin">
-                    <Button variant="outline" size="sm">Admin</Button>
-                  </Link>
-                )}
-                <Link href="/profile">
-                  <Avatar className="h-8 w-8 cursor-pointer">
-                    <AvatarImage src={userProfile?.avatar_url || user.user_metadata?.avatar_url || ''} />
-                    <AvatarFallback>
-                      {userProfile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => signOut()}
-                  className="text-gray-600 hover:text-red-600"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="bg-white shadow-md"
+        >
+          {sidebarOpen ? <X className="h-5 w-5" /> : <HomeIcon className="h-5 w-5" />}
+        </Button>
       </div>
 
       <div className="flex">
@@ -226,7 +183,7 @@ export default function Home() {
                             <span className="text-sm font-medium">{post.author?.full_name || 'Usuário'}</span>
                             <span className="text-xs text-gray-500">@{(post.author?.full_name || 'user').toLowerCase().replace(/\s/g, '')}</span>
                             <span className="text-xs text-gray-500">
-                              {post.published_at ? format(new Date(post.published_at), 'dd/MM/yyyy', { locale: ptBR }) : 'Agora'}
+                              {post.published_at ? formatDate(post.published_at, 'dd/MM/yyyy') : 'Agora'}
                             </span>
                           </div>
                           

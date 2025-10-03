@@ -20,8 +20,7 @@ import {
   Trash2
 } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -227,7 +226,7 @@ export default function AdminPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            {formatDate(post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                         <Badge variant="outline">Aguardando</Badge>
@@ -338,7 +337,7 @@ export default function AdminPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            {formatDate(post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                       </div>
@@ -391,7 +390,7 @@ export default function AdminPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            {format(new Date(post.created_at), 'dd MMM yyyy', { locale: ptBR })}
+                            {formatDate(post.created_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                       </div>

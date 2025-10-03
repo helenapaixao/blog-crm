@@ -22,8 +22,7 @@ import {
   LogOut
 } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -559,7 +558,7 @@ export default function DashboardPage() {
                           <span>{post.group?.name}</span>
                           <span>•</span>
                           <span>
-                            Rejeitada em {format(new Date(post.updated_at), 'dd MMM yyyy', { locale: ptBR })}
+                            Rejeitada em {formatDate(post.updated_at, 'dd MMM yyyy')}
                           </span>
                         </div>
                         <Link href={`/post/${post.id}`}>

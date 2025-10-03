@@ -24,8 +24,7 @@ import {
   Edit
 } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Database } from '@/lib/supabase'
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
@@ -178,7 +177,7 @@ export default function PostPage() {
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
               <span>
-                {format(new Date(post.published_at || post.created_at), 'dd MMMM yyyy', { locale: ptBR })}
+                {formatDate(post.published_at || post.created_at, 'dd MMMM yyyy')}
               </span>
             </div>
           </div>
