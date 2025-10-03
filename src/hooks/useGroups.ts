@@ -27,7 +27,6 @@ export function useGroups() {
         `)
         .order('name')
 
-      // Se deu erro por causa da coluna status, tenta sem ela
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, fetching groups without status')
         
@@ -50,7 +49,6 @@ export function useGroups() {
           throw result.error
         }
 
-        // Adiciona status 'approved' para todos os grupos
         data = (result.data || []).map(group => ({
           ...group,
           status: 'approved' as const
@@ -70,14 +68,12 @@ export function useGroups() {
 
   const createGroup = async (group: GroupInsert) => {
     try {
-      // Primeiro verifica se o usuário existe na tabela users
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id')
         .eq('id', group.created_by)
         .single()
 
-      // Se o usuário não existe, cria ele na tabela users
       if (userError && userError.code === 'PGRST116') {
         console.log('User not found in users table, creating user profile')
         
@@ -117,7 +113,13 @@ export function useGroups() {
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, creating group without status')
         
-        const { status, ...groupWithoutStatus } = groupData as Omit<typeof groupData, 'status'>
+        const groupWithoutStatus = {
+          name: groupData.name,
+          description: groupData.description,
+          slug: groupData.slug,
+          cover_image: groupData.cover_image,
+          created_by: groupData.created_by
+        }
         
         const result = await supabase
           .from('groups')
@@ -157,11 +159,15 @@ export function useGroups() {
         .select()
         .single()
 
-      // Se deu erro por causa da coluna status, tenta sem ela
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, updating without status')
         
-        const { status, ...updatesWithoutStatus } = updates as Omit<typeof updates, 'status'>
+        const updatesWithoutStatus = {
+          name: updates.name,
+          description: updates.description,
+          slug: updates.slug,
+          cover_image: updates.cover_image
+        }
         
         const result = await supabase
           .from('groups')
@@ -175,7 +181,6 @@ export function useGroups() {
           throw result.error
         }
 
-        // Adiciona status localmente
         data = {
           ...result.data,
           status: updates.status || 'approved'
@@ -213,7 +218,6 @@ export function useGroups() {
     try {
       const result = await updateGroup(id, { status: 'approved' })
       
-      // Se deu erro por causa da coluna status, apenas atualiza localmente
       if (result.error && (result.error as { code?: string }).code === 'PGRST204') {
         console.log('Status column not found, updating locally')
         setGroups(prev => prev.map(group => 
@@ -232,7 +236,6 @@ export function useGroups() {
     try {
       const result = await updateGroup(id, { status: 'rejected' })
       
-      // Se deu erro por causa da coluna status, apenas atualiza localmente
       if (result.error && (result.error as { code?: string }).code === 'PGRST204') {
         console.log('Status column not found, updating locally')
         setGroups(prev => prev.map(group => 
@@ -247,7 +250,6 @@ export function useGroups() {
     }
   }
 
-  // Função para buscar grupos por status
   const fetchGroupsByStatus = async (status: 'pending' | 'approved' | 'rejected') => {
     try {
       setLoading(true)
@@ -261,7 +263,6 @@ export function useGroups() {
         .eq('status', status)
         .order('created_at', { ascending: false })
 
-      // Se deu erro por causa da coluna status, busca todos os grupos
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, fetching all groups')
         
@@ -284,13 +285,11 @@ export function useGroups() {
           throw result.error
         }
 
-        // Adiciona status 'approved' e filtra se necessário
         const allGroups = (result.data || []).map(group => ({
           ...group,
           status: 'approved' as const
         }))
 
-        // Se está buscando 'approved', mostra todos. Se 'pending', mostra vazio
         data = status === 'approved' ? allGroups : []
         error = null
       } else if (error) {
@@ -305,7 +304,6 @@ export function useGroups() {
     }
   }
 
-  // Função para buscar apenas grupos aprovados (para usuários normais)
   const fetchApprovedGroups = async () => {
     try {
       setLoading(true)
@@ -319,7 +317,6 @@ export function useGroups() {
         .eq('status', 'approved')
         .order('name')
 
-      // Se deu erro por causa da coluna status, busca todos os grupos
       if (error && error.code === 'PGRST204') {
         console.log('Status column not found, fetching all groups as approved')
         
@@ -342,7 +339,6 @@ export function useGroups() {
           throw result.error
         }
 
-        // Adiciona status 'approved' para todos os grupos
         data = (result.data || []).map(group => ({
           ...group,
           status: 'approved' as const
@@ -360,6 +356,33 @@ export function useGroups() {
     }
   }
 
+  const getGroupStats = async (groupId: string) => {
+    try {
+      const { count: postsCount } = await supabase
+        .from('posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('group_id', groupId)
+
+      const { data: authors } = await supabase
+        .from('posts')
+        .select('author_id')
+        .eq('group_id', groupId)
+
+      const uniqueMembers = new Set(authors?.map(p => p.author_id) || []).size
+
+      return {
+        postsCount: postsCount || 0,
+        membersCount: uniqueMembers
+      }
+    } catch (error) {
+      console.error('Error fetching group stats:', error)
+      return {
+        postsCount: 0,
+        membersCount: 0
+      }
+    }
+  }
+
   return {
     groups,
     loading,
@@ -371,6 +394,7 @@ export function useGroups() {
     rejectGroup,
     fetchGroupsByStatus,
     fetchApprovedGroups,
+    getGroupStats,
     refetch: fetchGroups,
   }
 }

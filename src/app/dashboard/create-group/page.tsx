@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Plus, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { ImageUploadStorage } from '@/components/ui/image-upload-storage'
 
 export default function CreateGroupPage() {
   const router = useRouter()
@@ -19,7 +20,8 @@ export default function CreateGroupPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    slug: ''
+    slug: '',
+    cover_image: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -73,7 +75,8 @@ export default function CreateGroupPage() {
       setFormData({
         name: '',
         description: '',
-        slug: ''
+        slug: '',
+        cover_image: ''
       })
       
 
@@ -172,6 +175,19 @@ export default function CreateGroupPage() {
                 />
                 <p className="text-sm text-gray-500">
                   Explique o que o grupo representa e que tipo de conteúdo será publicado
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <ImageUploadStorage
+                  value={formData.cover_image}
+                  onChange={(url) => setFormData(prev => ({ ...prev, cover_image: url }))}
+                  label="Imagem de Capa do Grupo"
+                  placeholder="URL da imagem ou arraste uma foto do seu PC"
+                  userId={user?.id}
+                />
+                <p className="text-sm text-gray-500">
+                  Adicione uma imagem representativa para o grupo (opcional)
                 </p>
               </div>
 

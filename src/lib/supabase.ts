@@ -47,6 +47,7 @@ export interface Database {
           name: string
           description: string | null
           slug: string
+          cover_image: string | null
           status: 'pending' | 'approved' | 'rejected'
           created_by: string
           created_at: string
@@ -57,6 +58,7 @@ export interface Database {
           name: string
           description?: string | null
           slug: string
+          cover_image?: string | null
           status?: 'pending' | 'approved' | 'rejected'
           created_by: string
           created_at?: string
@@ -67,6 +69,7 @@ export interface Database {
           name?: string
           description?: string | null
           slug?: string
+          cover_image?: string | null
           status?: 'pending' | 'approved' | 'rejected'
           created_by?: string
           created_at?: string

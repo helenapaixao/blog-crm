@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { usePosts } from '@/hooks/usePosts'
 import { useGroups } from '@/hooks/useGroups'
+import { Sidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -59,18 +60,9 @@ export default function Home() {
     return null
   }
 
-  const getGroupIcon = (groupName: string) => {
-    const name = groupName.toLowerCase()
-    if (name.includes('dev') || name.includes('programação')) return <Code className="h-4 w-4" />
-    if (name.includes('ui') || name.includes('ux')) return <Sun className="h-4 w-4" />
-    if (name.includes('futebol') || name.includes('esporte')) return <Globe className="h-4 w-4" />
-    if (name.includes('jardinagem') || name.includes('plantas')) return <Leaf className="h-4 w-4" />
-    return <Users className="h-4 w-4" />
-  }
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Top Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -124,89 +116,35 @@ export default function Home() {
       </div>
 
       <div className="flex">
-        {/* Sidebar */}
-        <div className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-gray-50 border-r border-gray-200 lg:block ${sidebarOpen ? 'block' : 'hidden'}`}>
-          <div className="p-4">
-            {/* Logo e fechar */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">3P</span>
-                </div>
-                <span className="font-semibold text-gray-900">3Pontos Community</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarOpen(false)}
-                className="lg:hidden"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+        <Sidebar 
+          isOpen={sidebarOpen} 
+          onToggle={() => setSidebarOpen(!sidebarOpen)} 
+        />
 
-            {/* Home Link */}
-            <div className="mb-6">
-              <Link href="/">
-                <Button variant="ghost" className="w-full justify-start">
-                  <HomeIcon className="h-4 w-4 mr-2" />
-                  Home
-                </Button>
-              </Link>
-            </div>
-
-            {/* Minhas Comunidades */}
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Minhas comunidades</h3>
-              <div className="space-y-1">
-                {groups.map((group) => (
-                  <Link key={group.id} href={`/group/${group.slug}`}>
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start h-auto p-2 hover:bg-blue-50"
-                    >
-                      <div className="flex items-center w-full">
-                        <div className="flex items-center space-x-3 flex-1">
-                          <div className="text-blue-600">
-                            {getGroupIcon(group.name)}
-                          </div>
-                          <span className="text-sm">{group.name}</span>
-                        </div>
-                        <Badge variant="secondary">
-                          +999
-                        </Badge>
-                      </div>
-                    </Button>
-                  </Link>
-                ))}
-                
-                {/* Botão para criar comunidade */}
-                <Link href="/dashboard/create-group">
-                  <Button variant="ghost" className="w-full justify-start h-auto p-2 hover:bg-blue-50">
-                    <div className="flex items-center space-x-3">
-                      <Plus className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm text-blue-600">Criar comunidade</span>
-                    </div>
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
         <div className="flex-1">
-          {/* Community Banner */}
-          <div className="bg-gradient-to-r from-gray-800 to-gray-900 h-48 relative">
-            <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+          <div className="h-48 relative overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: groups.length > 0 && groups[0].cover_image 
+                  ? `url(${groups[0].cover_image})` 
+                  : 'linear-gradient(to right, #1f2937, #111827)'
+              }}
+            >
+              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+            </div>
             <div className="absolute bottom-4 left-6">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                   <Code className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="text-white">
-                  <h1 className="text-2xl font-bold">/r/ Dev</h1>
-                  <p className="text-gray-300 text-sm">Comunidade de Desenvolvedores</p>
+                  <h1 className="text-2xl font-bold">
+                    {groups.length > 0 ? `/r/ ${groups[0].name}` : '/r/ Dev'}
+                  </h1>
+                  <p className="text-gray-300 text-sm">
+                    {groups.length > 0 ? groups[0].description || 'Comunidade temática' : 'Comunidade de Desenvolvedores'}
+                  </p>
                 </div>
               </div>
             </div>
