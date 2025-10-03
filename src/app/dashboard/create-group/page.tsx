@@ -56,10 +56,11 @@ export default function CreateGroupPage() {
     setIsSubmitting(true)
     
     try {
-      const { error } = await createGroup({
+      const { data: createdGroup, error } = await createGroup({
         name: formData.name,
         description: formData.description || null,
         slug: formData.slug,
+        cover_image: formData.cover_image || null,
         created_by: user.id,
         status: 'pending'
       })
@@ -81,7 +82,13 @@ export default function CreateGroupPage() {
       
 
       setTimeout(() => {
-        router.push('/dashboard')
+        if (createdGroup?.slug) {
+          router.push(`/group/${createdGroup.slug}`)
+        } else if (formData.slug) {
+          router.push(`/group/${formData.slug}`)
+        } else {
+          router.push('/dashboard')
+        }
       }, 2000)
       
     } catch (error) {

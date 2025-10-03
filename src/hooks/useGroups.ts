@@ -101,6 +101,8 @@ export function useGroups() {
         status: group.status || 'pending'
       }
 
+      console.log('Creating group with data:', groupData)
+
       let { data, error } = await supabase
         .from('groups')
         .insert(groupData)
@@ -117,6 +119,8 @@ export function useGroups() {
           cover_image: groupData.cover_image,
           created_by: groupData.created_by
         }
+        
+        console.log('Creating group without status:', groupWithoutStatus)
         
         const result = await supabase
           .from('groups')
@@ -139,6 +143,7 @@ export function useGroups() {
         throw error
       }
       
+      console.log('Group created successfully:', data)
       setGroups(prev => [...prev, data])
       return { data, error: null }
     } catch (err) {

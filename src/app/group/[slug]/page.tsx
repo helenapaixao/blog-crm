@@ -29,7 +29,8 @@ import {
   ChevronDown,
   Reply,
   ArrowLeft,
-  FolderOpen
+  FolderOpen,
+  RefreshCw
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -41,7 +42,7 @@ type Group = Database['public']['Tables']['groups']['Row']
 export default function GroupPage() {
   const params = useParams()
   const { user, isAdmin, signOut, loading, userProfile } = useAuth()
-  const { groups } = useGroups()
+  const { groups, refetch: refetchGroups } = useGroups()
   const [group, setGroup] = useState<Group | null>(null)
   const [loadingGroup, setLoadingGroup] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -61,6 +62,8 @@ export default function GroupPage() {
         .single()
 
       if (error) throw error
+      console.log('Group data fetched:', data)
+      console.log('Group cover image:', data?.cover_image)
       setGroup(data)
     } catch (error) {
       console.error('Error fetching group:', error)
@@ -180,7 +183,7 @@ export default function GroupPage() {
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage: group.cover_image 
-                  ? `url(${group.cover_image})` 
+                  ? `url(${group.cover_image}?t=${Date.now()})` 
                   : 'linear-gradient(to right, #1e40af, #3730a3)'
               }}
             >
@@ -220,12 +223,26 @@ export default function GroupPage() {
                       </div>
                     </div>
                   </div>
-                  <Link href="/dashboard/create">
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Criar post
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        setLoadingGroup(true)
+                        await Promise.all([fetchGroup(), refetchGroups()])
+                      }}
+                      disabled={loadingGroup}
+                    >
+                      <RefreshCw className={`h-4 w-4 mr-2 ${loadingGroup ? 'animate-spin' : ''}`} />
+                      Atualizar
                     </Button>
-                  </Link>
+                    <Link href="/dashboard/create">
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Criar post
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </CardContent>
             </Card>
