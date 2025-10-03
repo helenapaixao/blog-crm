@@ -212,7 +212,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Community Info Card */}
           <div className="px-6 -mt-6 relative z-10">
             <Card className="mb-6">
               <CardContent className="p-6">

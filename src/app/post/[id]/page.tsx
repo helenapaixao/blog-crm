@@ -29,6 +29,7 @@ import { ptBR } from 'date-fns/locale'
 import { toast } from 'sonner'
 import { Database } from '@/lib/supabase'
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
+import { CommentsSection } from '@/components/ui/comments-section'
 
 type Post = Database['public']['Tables']['posts']['Row'] & {
   author: {
@@ -47,11 +48,9 @@ export default function PostPage() {
   const { user } = useAuth()
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
-  const [commentText, setCommentText] = useState('')
-  const [submittingComment, setSubmittingComment] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   
-  const { comments, createComment, loading: commentsLoading } = useComments(params.id as string)
+  const { comments, loading: commentsLoading } = useComments(params.id as string)
   const { likes, userLiked, likesCount, toggleLike } = useLikes(params.id as string)
   const { deletePost } = usePosts()
 
@@ -114,36 +113,6 @@ export default function PostPage() {
     }
   }
 
-  const handleComment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!user) {
-      toast.error('Você precisa estar logado para comentar')
-      return
-    }
-
-    if (!commentText.trim()) {
-      toast.error('Comentário não pode estar vazio')
-      return
-    }
-
-    setSubmittingComment(true)
-    
-    const { error } = await createComment({
-      content: commentText.trim(),
-      post_id: params.id as string,
-      author_id: user.id
-    })
-
-    if (error) {
-      toast.error('Erro ao enviar comentário')
-    } else {
-      toast.success('Comentário enviado!')
-      setCommentText('')
-    }
-    
-    setSubmittingComment(false)
-  }
 
   if (loading) {
     return (
@@ -318,94 +287,17 @@ export default function PostPage() {
         )}
 
         <Separator className="my-8" />
-
-        {/* Comments Section */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Comentários ({comments.length})
-          </h2>
-
-          {/* Add Comment Form */}
-          {user ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>Deixe um comentário</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleComment} className="space-y-4">
-                  <Textarea
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Escreva seu comentário..."
-                    rows={4}
-                    required
-                  />
-                  <div className="flex justify-end">
-                    <Button type="submit" disabled={submittingComment}>
-                      {submittingComment ? 'Enviando...' : 'Enviar Comentário'}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="text-center py-8">
-                <p className="text-gray-600 mb-4">
-                  Você precisa estar logado para comentar
-                </p>
-                <Link href="/auth/login">
-                  <Button>Fazer Login</Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Comments List */}
-          {commentsLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Carregando comentários...</p>
-            </div>
-          ) : comments.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-8">
-                <p className="text-gray-500">Nenhum comentário ainda. Seja o primeiro!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {comments.map((comment) => (
-                <Card key={comment.id}>
-                  <CardContent className="pt-6">
-                    <div className="flex items-start space-x-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={comment.author.avatar_url || ''} />
-                        <AvatarFallback>
-                          {comment.author.full_name?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <p className="font-medium text-gray-900">
-                            {comment.author.full_name || 'Usuário'}
-                          </p>
-                          <span className="text-sm text-gray-500">
-                            {format(new Date(comment.created_at), 'dd MMM yyyy, HH:mm', { locale: ptBR })}
-                          </span>
-                        </div>
-                        <p className="text-gray-700 whitespace-pre-wrap">
-                          {comment.content}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
+
+      {/* Comments Section */}
+      {post && (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <CommentsSection 
+            postId={post.id} 
+            postAuthorId={post.author_id}
+          />
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal

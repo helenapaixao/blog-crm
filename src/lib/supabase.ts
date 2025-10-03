@@ -123,6 +123,7 @@ export interface Database {
           content: string
           post_id: string
           author_id: string
+          parent_id: string | null
           created_at: string
           updated_at: string
         }
@@ -131,6 +132,7 @@ export interface Database {
           content: string
           post_id: string
           author_id: string
+          parent_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -139,6 +141,7 @@ export interface Database {
           content?: string
           post_id?: string
           author_id?: string
+          parent_id?: string | null
           created_at?: string
           updated_at?: string
         }
