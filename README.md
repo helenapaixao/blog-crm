@@ -1,6 +1,6 @@
-# Blog CRM/CMS
+# BlogCRM - Reddit-like CMS
 
-Sistema completo de gerenciamento de conteúdo para blog construído com Next.js e Supabase.
+Sistema completo de gerenciamento de conteúdo inspirado no Reddit, construído com Next.js e Supabase. Uma plataforma moderna para criação de comunidades temáticas com sistema de aprovação e engajamento.
 
 ## 🚀 Funcionalidades
 
@@ -27,14 +27,34 @@ Sistema completo de gerenciamento de conteúdo para blog construído com Next.js
 - ✅ Status de publicação (rascunho, aguardando, publicado, rejeitado)
 - ✅ Sistema de curtidas e comentários
 
+## 🎯 Conceito Reddit-like
+
+Este projeto é inspirado no Reddit, mas com foco no mercado brasileiro e funcionalidades modernas:
+
+### 🌟 **Principais Características:**
+- **Grupos Temáticos** (subreddits) para organizar conteúdo
+- **Sistema de Aprovação** para manter qualidade
+- **Interface Moderna** e responsiva
+- **Performance Otimizada** com Next.js 15
+- **Design Brasileiro** focado no mercado local
+
+### 🚀 **Vantagens sobre Reddit:**
+- ✅ Interface mais limpa e moderna
+- ✅ Melhor performance e velocidade
+- ✅ Sistema de aprovação para qualidade
+- ✅ Upload de imagens nativo
+- ✅ Editor rico integrado
+- ✅ Foco no mercado brasileiro
+
 ## 🛠️ Tecnologias Utilizadas
 
-- **Frontend**: Next.js 14, React, TypeScript
+- **Frontend**: Next.js 15, React, TypeScript
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
 - **UI**: Tailwind CSS, shadcn/ui, Radix UI
 - **Editor**: TipTap (rich text editor)
 - **Autenticação**: Supabase Auth
 - **Banco de Dados**: PostgreSQL com Row Level Security
+- **Animações**: Framer Motion, CSS Transitions
 
 ## 📋 Pré-requisitos
 
@@ -205,11 +225,71 @@ Se você encontrar algum problema ou tiver dúvidas:
 
 ## 🔮 Próximas Funcionalidades
 
-- [ ] Upload de imagens via interface
-- [ ] Sistema de notificações
-- [ ] Moderação de comentários
-- [ ] Analytics de postagens
-- [ ] Sistema de newsletter
-- [ ] API REST para integrações
-- [ ] PWA (Progressive Web App)
-- [ ] Temas personalizáveis
+### 🎯 Funcionalidades Reddit-like (Prioridade Alta)
+- [ ] **Sistema de votos** (upvote/downvote) para posts e comentários
+- [ ] **Ranking de posts** por popularidade (score, hot, trending)
+- [ ] **Flairs e tags personalizadas** para categorização visual
+- [ ] **Busca avançada** por conteúdo, usuários e grupos
+- [ ] **Notificações em tempo real** para interações
+
+### 📱 Funcionalidades Mobile e UX
+- [ ] **App mobile** (React Native) para iOS/Android
+- [ ] **Chat/DM** entre usuários
+- [ ] **Live discussions** (chat ao vivo em posts)
+- [ ] **Polls e enquetes** interativas
+- [ ] **Awards e badges** para usuários ativos
+
+### 💰 Monetização e Analytics
+- [ ] **Sistema de monetização** para criadores de conteúdo
+- [ ] **Analytics avançados** de engajamento
+- [ ] **Sistema de assinaturas** premium
+- [ ] **Publicidade nativa** e sponsored content
+- [ ] **Marketplace** integrado
+
+### 🔧 Melhorias Técnicas
+- [ ] **API REST completa** para integrações
+- [ ] **PWA** (Progressive Web App)
+- [ ] **Temas personalizáveis** por grupo
+- [ ] **Moderação automática** com IA
+- [ ] **Integração com redes sociais**
+- [ ] **Sistema de backup** automático
+
+## 🗺️ Roadmap de Desenvolvimento
+
+### 📅 **Fase 1: Core Reddit Features (Q1 2024)**
+- Sistema de votos (upvote/downvote)
+- Ranking de posts por popularidade
+- Flairs e tags personalizadas
+- Busca avançada por conteúdo
+
+### 📅 **Fase 2: Social Features (Q2 2024)**
+- Notificações em tempo real
+- Chat/DM entre usuários
+- Live discussions
+- Sistema de awards e badges
+
+### 📅 **Fase 3: Mobile & Monetização (Q3 2024)**
+- App mobile (React Native)
+- Sistema de monetização
+- Analytics avançados
+- Publicidade nativa
+
+### 📅 **Fase 4: Escala & Integrações (Q4 2024)**
+- API REST completa
+- PWA
+- Integração com redes sociais
+- Moderação automática com IA
+
+## 🎯 Visão de Mercado
+
+### 🇧🇷 **Oportunidade no Brasil**
+- Reddit não é popular no Brasil
+- Falta de plataformas de discussão em português
+- Mercado de 200+ milhões de pessoas
+- Comunidades brasileiras precisam de espaço
+
+### 🌍 **Potencial Global**
+- Interface superior ao Reddit atual
+- Performance otimizada
+- Tecnologia moderna
+- Foco em qualidade de conteúdo
