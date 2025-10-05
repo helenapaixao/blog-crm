@@ -1,25 +1,25 @@
 'use client'
 
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect } from 'react'
 
 interface ClientOnlyProps {
-  children: ReactNode
-  fallback?: ReactNode
+  children: React.ReactNode
+  fallback?: React.ReactNode
 }
 
 /**
- * Component that only renders its children on the client side
+ * Component that only renders its children on the client side.
  * Useful for preventing hydration mismatches with components that
- * depend on browser APIs or client-side state
+ * rely on browser APIs or have different server/client behavior.
  */
 export function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
-  const [hasMounted, setHasMounted] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    setHasMounted(true)
+    setIsClient(true)
   }, [])
 
-  if (!hasMounted) {
+  if (!isClient) {
     return <>{fallback}</>
   }
 
