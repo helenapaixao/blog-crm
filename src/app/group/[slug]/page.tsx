@@ -134,62 +134,24 @@ export default function GroupPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden"
-            >
-              {sidebarOpen ? <X className="h-5 w-5" /> : <HomeIcon className="h-5 w-5" />}
-            </Button>
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-            </Link>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">3P</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">3Pontos</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {user && (
-              <>
-                <Link href="/dashboard">
-                  <Button variant="outline" size="sm">Dashboard</Button>
-                </Link>
-                {isAdmin && (
-                  <Link href="/admin">
-                    <Button variant="outline" size="sm">Admin</Button>
-                  </Link>
-                )}
-                <Link href="/profile">
-                  <Avatar className="h-8 w-8 cursor-pointer">
-                    <AvatarImage src={userProfile?.avatar_url || user.user_metadata?.avatar_url || ''} />
-                    <AvatarFallback>
-                      {userProfile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => signOut()}
-                  className="text-gray-600 hover:text-red-600"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="bg-white shadow-md"
+        >
+          {sidebarOpen ? <X className="h-5 w-5" /> : <HomeIcon className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      <div className="lg:hidden fixed top-4 right-4 z-50">
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="bg-white shadow-md">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar
+          </Button>
+        </Link>
       </div>
 
       <div className="flex">

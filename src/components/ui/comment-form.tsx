@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createCommentSchema, type CreateCommentFormData } from '@/lib/validations'
 
 interface CommentFormProps {
   onSubmit: (content: string) => Promise<void>
@@ -22,19 +25,23 @@ export function CommentForm({
   autoFocus = false 
 }: CommentFormProps) {
   const { userProfile } = useAuth()
-  const [content, setContent] = useState('')
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<{ content: string }>({
+    resolver: zodResolver(createCommentSchema.pick({ content: true })),
+    defaultValues: {
+      content: '',
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!content.trim()) {
-      toast.error('Por favor, digite um comentário')
-      return
-    }
-
+  const onSubmitForm = async (data: { content: string }) => {
     try {
-      await onSubmit(content.trim())
-      setContent('')
+      await onSubmit(data.content.trim())
+      reset()
       toast.success('Comentário adicionado com sucesso!')
     } catch (error) {
       console.error('Error submitting comment:', error)
@@ -44,7 +51,7 @@ export function CommentForm({
 
   return (
     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
         <Label htmlFor="comment" className="text-sm font-medium text-gray-700">
           Adicionar um comentário
         </Label>
@@ -60,23 +67,25 @@ export function CommentForm({
           <div className="flex-1">
             <Textarea
               id="comment"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              {...register('content')}
               placeholder={placeholder}
               className="min-h-[100px] resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
               autoFocus={autoFocus}
-              disabled={submitting}
+              disabled={submitting || isSubmitting}
             />
+            {errors.content && (
+              <p className="text-sm text-red-600 mt-1">{errors.content.message}</p>
+            )}
           </div>
         </div>
         
         <div className="flex justify-end">
           <Button 
             type="submit" 
-            disabled={submitting || !content.trim()}
+            disabled={submitting || isSubmitting}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6"
           >
-            {submitting ? 'Enviando...' : 'Responder'}
+            {submitting || isSubmitting ? 'Enviando...' : 'Responder'}
           </Button>
         </div>
       </form>

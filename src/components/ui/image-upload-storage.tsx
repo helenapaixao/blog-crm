@@ -77,7 +77,7 @@ export function ImageUploadStorage({
 
     try {
       const fileExt = file.name.split('.').pop()
-      const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2)}`
+      const uniqueId = `upload-${Date.now()}-${Math.floor(Math.random() * 1000000)}`
       const fileName = `${userId}/${uniqueId}.${fileExt}`
       
       console.log('Uploading file:', fileName)
@@ -98,6 +98,7 @@ export function ImageUploadStorage({
         .from('images')
         .getPublicUrl(fileName)
 
+      console.log('Image uploaded successfully, public URL:', publicUrl)
       onChange(publicUrl)
       toast.success('Imagem carregada com sucesso!')
       
