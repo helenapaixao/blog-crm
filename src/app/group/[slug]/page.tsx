@@ -4,20 +4,16 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePosts } from '@/hooks/usePosts'
-import { useGroups } from '@/hooks/useGroups'
 import { Sidebar } from '@/components/ui/sidebar'
 import { supabase } from '@/lib/supabase'
 import { formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { JoinGroupButton } from '@/components/ui/join-group-button'
 import { 
-  Heart, 
   MessageCircle, 
   Calendar, 
-  LogOut, 
   Users, 
   Plus,
   X,
@@ -31,19 +27,15 @@ import {
   Reply,
   ArrowLeft,
   FolderOpen,
-  RefreshCw
-} from 'lucide-react'
+  } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { Database } from '@/lib/supabase'
 
 type Group = Database['public']['Tables']['groups']['Row']
 
 export default function GroupPage() {
   const params = useParams()
-  const { user, isAdmin, signOut, loading, userProfile } = useAuth()
-  const { groups, refetch: refetchGroups } = useGroups()
+  const { user} = useAuth()
   const [group, setGroup] = useState<Group | null>(null)
   const [loadingGroup, setLoadingGroup] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -70,7 +62,6 @@ export default function GroupPage() {
       console.log('Group cover image length:', data?.cover_image?.length)
       setGroup(data)
       
-      // Testar se a imagem carrega
       if (data?.cover_image) {
         testImageLoad(data.cover_image)
       }
@@ -161,13 +152,10 @@ export default function GroupPage() {
           onToggle={() => setSidebarOpen(!sidebarOpen)} 
         />
 
-        {/* Main Content */}
         <div className="flex-1">
-          {/* Community Banner */}
           <div className="h-48 relative overflow-hidden">
             {group.cover_image ? (
               <>
-                {/* Teste com tag img */}
                 <img 
                   src={group.cover_image}
                   alt="Group cover"
@@ -176,10 +164,10 @@ export default function GroupPage() {
                   onError={() => console.error('IMG tag: Image failed to load')}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-                {/* Debug: mostrar URL da imagem */}
                 <div className="absolute top-2 right-2 text-xs text-white bg-black bg-opacity-50 p-1 rounded">
-                  {group.cover_image ? 'Image loaded' : 'No image'}
+                  {group.cover_image}
                 </div>
+                console.log('Group cover image:', group.cover_image)
               </>
             ) : (
               <div 
@@ -189,25 +177,11 @@ export default function GroupPage() {
                 }}
               >
                 <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-                <div className="absolute top-2 right-2 text-xs text-white bg-black bg-opacity-50 p-1 rounded">
-                  No image - using gradient
-                </div>
+            
               </div>
             )}
-            <div className="absolute bottom-4 left-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                  {getGroupIcon(group.name)}
-                </div>
-                <div className="text-white">
-                  <h1 className="text-2xl font-bold">/r/ {group.name}</h1>
-                  <p className="text-gray-300 text-sm">{group.description || 'Comunidade temática'}</p>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Community Info Card */}
           <div className="px-6 -mt-6 relative z-10">
             <Card className="mb-6">
               <CardContent className="p-6">
@@ -234,18 +208,7 @@ export default function GroupPage() {
                       groupName={group.name}
                       membersCount={0}
                     />
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={async () => {
-                        setLoadingGroup(true)
-                        await Promise.all([fetchGroup(), refetchGroups()])
-                      }}
-                      disabled={loadingGroup}
-                    >
-                      <RefreshCw className={`h-4 w-4 mr-2 ${loadingGroup ? 'animate-spin' : ''}`} />
-                      Atualizar
-                    </Button>
+                  
                     <Link href="/dashboard/create">
                       <Button className="bg-blue-600 hover:bg-blue-700">
                         <Plus className="h-4 w-4 mr-2" />
@@ -258,7 +221,6 @@ export default function GroupPage() {
             </Card>
           </div>
 
-          {/* Posts Section */}
           <div className="px-6">
             <h3 className="text-lg font-semibold mb-4">Veja todos os posts da comunidade</h3>
             
@@ -290,7 +252,6 @@ export default function GroupPage() {
                   <Card key={post.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex space-x-3">
-                        {/* Vote Buttons */}
                         <div className="flex flex-col items-center space-y-1">
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-50">
                             <ChevronUp className="h-4 w-4 text-gray-600 hover:text-orange-500" />
@@ -303,7 +264,6 @@ export default function GroupPage() {
                           </Button>
                         </div>
 
-                        {/* Post Content */}
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
                             <Avatar className="h-6 w-6">
@@ -330,7 +290,6 @@ export default function GroupPage() {
                             {post.excerpt || post.content.substring(0, 200) + '...'}
                           </p>
 
-                          {/* Post Actions */}
                           <div className="flex items-center space-x-4">
                             <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600">
                               <MessageCircle className="h-4 w-4 mr-1" />

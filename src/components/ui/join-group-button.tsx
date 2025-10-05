@@ -107,7 +107,7 @@ export function JoinGroupButton({
         className={`${className} hover:bg-red-50 hover:text-red-600 hover:border-red-300`}
       >
         <UserMinus className="h-4 w-4 mr-2" />
-        Sair do grupo
+        Membro
       </Button>
     )
   }
