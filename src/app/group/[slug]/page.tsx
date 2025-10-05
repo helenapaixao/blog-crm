@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { JoinGroupButton } from '@/components/ui/join-group-button'
+import { GroupCoverImage } from '@/components/ui/group-cover-image'
 import { 
   MessageCircle, 
   Calendar, 
@@ -153,34 +154,11 @@ export default function GroupPage() {
         />
 
         <div className="flex-1">
-          <div className="h-48 relative overflow-hidden">
-            {group.cover_image ? (
-              <>
-                <img 
-                  src={group.cover_image}
-                  alt="Group cover"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onLoad={() => console.log('IMG tag: Image loaded successfully')}
-                  onError={() => console.error('IMG tag: Image failed to load')}
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-                <div className="absolute top-2 right-2 text-xs text-white bg-black bg-opacity-50 p-1 rounded">
-                  {group.cover_image}
-                </div>
-                console.log('Group cover image:', group.cover_image)
-              </>
-            ) : (
-              <div 
-                className="absolute inset-0 bg-cover bg-center"
-                style={{
-                  background: 'linear-gradient(to right, #1e40af, #3730a3)'
-                }}
-              >
-                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-            
-              </div>
-            )}
-          </div>
+          <GroupCoverImage 
+            coverImage={group.cover_image}
+            groupName={group.name}
+            className="h-48"
+          />
 
           <div className="px-6 -mt-6 relative z-10">
             <Card className="mb-6">
@@ -189,7 +167,7 @@ export default function GroupPage() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
                       {getGroupIcon(group.name)}
-                      <h2 className="text-lg font-semibold">/r/ {group.name}</h2>
+                      <h2 className="text-lg font-semibold"> {group.name}</h2>
                     </div>
                     <p className="text-gray-600 text-sm mb-4">
                       {group.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In porttitor pretium orci, sed maximus lorem consectetur at.'}

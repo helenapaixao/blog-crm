@@ -27,6 +27,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
+import { NotificationBell } from '@/components/ui/notification-bell'
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth()
@@ -119,6 +120,7 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold text-gray-900">Meu Dashboard</h1>
             </div>
             <nav className="flex items-center space-x-4">
+              <NotificationBell />
               <Link href="/">
                 <Button variant="outline">Voltar ao Feed</Button>
               </Link>

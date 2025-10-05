@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CommentsSection } from '@/components/ui/comments-section'
 import { JoinGroupButton } from '@/components/ui/join-group-button'
+import { GroupCoverImage } from '@/components/ui/group-cover-image'
 import { 
   Heart, 
   MessageCircle, 
@@ -82,25 +83,20 @@ export default function Home() {
         />
 
         <div className="flex-1">
-          <div className="h-48 relative overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: groups.length > 0 && groups[0].cover_image 
-                  ? `url(${groups[0].cover_image})` 
-                  : 'linear-gradient(to right, #1f2937, #111827)'
-              }}
-            >
-              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-            </div>
-            <div className="absolute bottom-4 left-6">
+          <div className="relative">
+            <GroupCoverImage 
+              coverImage={groups.length > 0 ? groups[0].cover_image : null}
+              groupName={groups.length > 0 ? groups[0].name : 'Dev'}
+              className="h-48"
+            />
+            <div className="absolute bottom-4 left-6 z-10">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                   <Code className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="text-white">
                   <h1 className="text-2xl font-bold">
-                    {groups.length > 0 ? `/r/ ${groups[0].name}` : '/r/ Dev'}
+                    {groups.length > 0 ? ` ${groups[0].name}` : 'Dev'}
                   </h1>
                   <p className="text-gray-300 text-sm">
                     {groups.length > 0 ? groups[0].description || 'Comunidade temática' : 'Comunidade de Desenvolvedores'}
@@ -117,7 +113,7 @@ export default function Home() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
                       <Code className="h-5 w-5 text-blue-600" />
-                      <h2 className="text-lg font-semibold">/r/ Dev</h2>
+                      <h2 className="text-lg font-semibold"> Dev</h2>
                     </div>
                     <p className="text-gray-600 text-sm mb-4">
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. In porttitor pretium orci, 
@@ -182,7 +178,6 @@ export default function Home() {
                           </Button>
                         </div>
 
-                        {/* Post Content */}
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
                             <Avatar className="h-6 w-6">

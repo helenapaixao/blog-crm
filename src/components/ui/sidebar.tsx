@@ -7,6 +7,7 @@ import { useGroups } from '@/hooks/useGroups'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { UserDropdown } from '@/components/ui/user-dropdown'
+import { NotificationBell } from '@/components/ui/notification-bell'
 import { 
   Home, 
   Users, 
@@ -197,6 +198,15 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             )}
           </div>
         </div>
+
+        {user && (
+          <div className="p-4 border-t border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">Notificações</span>
+              <NotificationBell />
+            </div>
+          </div>
+        )}
 
         {/* Logout Button */}
         {user && (

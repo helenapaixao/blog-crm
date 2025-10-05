@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { usePosts } from '@/hooks/usePosts'
 import { useGroups } from '@/hooks/useGroups'
+import { useAdminNotifications } from '@/hooks/useAdminNotifications'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +29,7 @@ export default function AdminPage() {
   const { user, isAdmin, loading } = useAuth()
   const { posts, approvePost, rejectPost, loading: postsLoading } = usePosts()
   const { groups, loading: groupsLoading } = useGroups()
+  const { pendingGroups, pendingCount, approveGroup, rejectGroup, loading: notificationsLoading } = useAdminNotifications()
   const router = useRouter()
 
   useEffect(() => {
@@ -151,6 +153,9 @@ export default function AdminPage() {
           <TabsList>
             <TabsTrigger value="pending">
               Aguardando Aprovação ({pendingPosts.length})
+            </TabsTrigger>
+            <TabsTrigger value="groups">
+              Grupos Pendentes ({pendingCount})
             </TabsTrigger>
             <TabsTrigger value="published">
               Publicadas ({publishedPosts.length})
