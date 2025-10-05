@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -60,6 +60,11 @@ export function CommentItem({
   const [showReplyForm, setShowReplyForm] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(comment.content)
+
+  // Debug: Monitorar mudanças no estado
+  useEffect(() => {
+    console.log('🟡 CommentItem renderizado - showReplyForm:', showReplyForm, 'onReply:', !!onReply)
+  }, [showReplyForm, onReply])
 
   const isAuthor = comment.author_id === currentUserId
   const isPostAuthor = comment.author_id === postAuthorId
@@ -190,7 +195,11 @@ export function CommentItem({
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
+              console.log('🔴 BOTÃO RESPONDER CLICADO!')
+              console.log('showReplyForm ANTES:', showReplyForm)
+              console.log('onReply existe:', !!onReply)
               setShowReplyForm(!showReplyForm)
+              console.log('showReplyForm DEPOIS:', !showReplyForm)
             }}
             className="px-3 py-1 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
           >
@@ -199,14 +208,34 @@ export function CommentItem({
           </Button>
         </div>
 
+        {/* Debug Info */}
+        <div className="mt-2 p-2 bg-blue-100 text-xs">
+          Debug: showReplyForm = {showReplyForm.toString()}, onReply = {!!onReply}
+        </div>
+        
         {showReplyForm && onReply && (
           <div className="mt-4">
+            <div className="mb-2 p-2 bg-green-100 text-sm">
+              ✅ Formulário de resposta está sendo renderizado!
+            </div>
             <CommentForm
               onSubmit={handleReply}
               placeholder="Adicionar uma resposta..."
               submitting={submitting}
               autoFocus
             />
+          </div>
+        )}
+        
+        {showReplyForm && !onReply && (
+          <div className="mt-4 p-2 bg-red-100 text-sm">
+            ❌ showReplyForm=true mas onReply é null/undefined
+          </div>
+        )}
+        
+        {!showReplyForm && onReply && (
+          <div className="mt-4 p-2 bg-yellow-100 text-sm">
+            ⚠️ onReply existe mas showReplyForm=false
           </div>
         )}
       </div>
