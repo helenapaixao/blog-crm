@@ -29,8 +29,11 @@ export function CommentsSection({ postId, postAuthorId }: CommentsSectionProps) 
   }
 
   const handleReply = async (parentId: string, content: string) => {
-    console.log('handleReply in CommentsSection called with:', parentId, content)
-    await addComment(content, parentId)
+    try {
+      await addComment(content, parentId)
+    } catch (error) {
+      console.error('Erro ao adicionar resposta:', error)
+    }
   }
 
   const handleDeleteComment = async (commentId: string) => {

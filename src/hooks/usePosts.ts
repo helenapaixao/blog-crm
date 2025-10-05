@@ -57,7 +57,7 @@ export function usePosts(groupId?: string, status?: string) {
 
   useEffect(() => {
     fetchPosts()
-  }, [fetchPosts])
+  }, [groupId, status]) 
 
   const createPost = async (post: PostInsert) => {
     try {

@@ -67,13 +67,9 @@ export function CommentItem({
   const canDelete = isAuthor && onDelete
 
   const handleReply = async (content: string) => {
-    console.log('handleReply called with:', content, 'for comment:', comment.id)
     if (onReply) {
-      console.log('onReply function exists, calling it...')
       await onReply(comment.id, content)
       setShowReplyForm(false)
-    } else {
-      console.log('onReply function is null/undefined')
     }
   }
 
@@ -188,55 +184,29 @@ export function CommentItem({
             <ChevronDown className="h-4 w-4 text-gray-600 hover:text-blue-500" />
           </Button>
           
-          <button 
+          <Button 
+            variant="ghost"
+            size="sm"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              alert('Botão Responder clicado!')
-              console.log('Responder button clicked')
-              console.log('onReply exists:', !!onReply)
-              console.log('showReplyForm before:', showReplyForm)
               setShowReplyForm(!showReplyForm)
-              console.log('showReplyForm after:', !showReplyForm)
             }}
-            className="px-3 py-1 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded border border-red-500"
+            className="px-3 py-1 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
           >
-            <Reply className="h-4 w-4 mr-1 inline" />
+            <Reply className="h-4 w-4 mr-1" />
             Responder
-          </button>
+          </Button>
         </div>
 
-        {/* Reply Form */}
         {showReplyForm && onReply && (
           <div className="mt-4">
-            <div className="bg-blue-100 p-2 mb-2 text-sm">
-              Debug: Reply form is showing!
-            </div>
             <CommentForm
               onSubmit={handleReply}
               placeholder="Adicionar uma resposta..."
               submitting={submitting}
               autoFocus
             />
-          </div>
-        )}
-        
-        {showReplyForm && !onReply && (
-          <div className="mt-4 bg-red-100 p-2 text-sm">
-            Debug: showReplyForm is true but onReply is false!
-          </div>
-        )}
-        
-        {!showReplyForm && onReply && (
-          <div className="mt-4 bg-yellow-100 p-2 text-sm">
-            Debug: onReply is true but showReplyForm is false!
-          </div>
-        )}
-        
-        {/* Debug info */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-2 text-xs text-gray-500">
-            Debug: showReplyForm={showReplyForm.toString()}, onReply={!!onReply}
           </div>
         )}
       </div>
