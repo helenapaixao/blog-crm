@@ -70,13 +70,13 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-white shadow-md"
+          className="bg-white dark:bg-gray-800 shadow-md"
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <HomeIcon className="h-5 w-5" />}
         </Button>
@@ -185,25 +185,25 @@ export default function Home() {
                         </div>
 
                         <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={post.author?.avatar_url || ''} />
-                              <AvatarFallback className="text-xs">
-                                {post.author?.full_name?.charAt(0) || 'U'}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm font-medium">{post.author?.full_name || 'Usuário'}</span>
-                            <span className="text-xs text-gray-500">@{(post.author?.full_name || 'user').toLowerCase().replace(/\s/g, '')}</span>
-                            <span className="text-xs text-gray-500">
-                              {post.published_at ? formatDate(post.published_at, 'dd/MM/yyyy') : 'Agora'}
-                            </span>
-                          </div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={post.author?.avatar_url || ''} />
+                          <AvatarFallback className="text-xs">
+                            {post.author?.full_name?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm font-medium dark:text-gray-100">{post.author?.full_name || 'Usuário'}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">@{(post.author?.full_name || 'user').toLowerCase().replace(/\s/g, '')}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {post.published_at ? formatDate(post.published_at, 'dd/MM/yyyy') : 'Agora'}
+                        </span>
+                      </div>
                           
-                          <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
                             {post.title}
                           </h4>
                           
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-3">
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-3">
                             {post.excerpt || post.content.substring(0, 200) + '...'}
                           </p>
 

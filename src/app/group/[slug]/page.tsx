@@ -126,13 +126,13 @@ export default function GroupPage() {
   const groupPosts = posts.filter(post => post.group_id === group.id && post.status === 'published')
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-white shadow-md"
+          className="bg-white dark:bg-gray-800 shadow-md"
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <HomeIcon className="h-5 w-5" />}
         </Button>
@@ -140,7 +140,7 @@ export default function GroupPage() {
 
       <div className="lg:hidden fixed top-4 right-4 z-50">
         <Link href="/">
-          <Button variant="ghost" size="sm" className="bg-white shadow-md">
+          <Button variant="ghost" size="sm" className="bg-white dark:bg-gray-800 shadow-md">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
@@ -169,10 +169,10 @@ export default function GroupPage() {
                       {getGroupIcon(group.name)}
                       <h2 className="text-lg font-semibold"> {group.name}</h2>
                     </div>
-                    <p className="text-gray-600 text-sm mb-4">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                       {group.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In porttitor pretium orci, sed maximus lorem consectetur at.'}
                     </p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                      
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />

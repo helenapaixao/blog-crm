@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { UserDropdown } from '@/components/ui/user-dropdown'
 import { NotificationBell } from '@/components/ui/notification-bell'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { 
   Home, 
   Users, 
@@ -205,7 +206,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   
 
         {user && (
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-gray-100 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Tema</span>
+              <ThemeToggle size="sm" />
+            </div>
+            
             <Button 
               variant="ghost" 
               className="w-full justify-start h-12 text-left text-red-600 hover:text-red-700 hover:bg-red-50"
