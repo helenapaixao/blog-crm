@@ -7,6 +7,7 @@ import { Sidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { CommentsSection } from '@/components/ui/comments-section'
 import { 
   Heart, 
   MessageCircle, 
@@ -35,6 +36,7 @@ export default function Home() {
   const { groups } = useGroups()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -154,7 +156,8 @@ export default function Home() {
             ) : (
               <div className="space-y-4">
                 {posts.map((post) => (
-                  <Card key={post.id} className="hover:shadow-md transition-shadow">
+                  <div key={post.id}>
+                    <Card className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex space-x-3">
                         <div className="flex flex-col items-center space-y-1">
@@ -193,13 +196,22 @@ export default function Home() {
                             {post.excerpt || post.content.substring(0, 200) + '...'}
                           </p>
 
-                          {/* Post Actions */}
                           <div className="flex items-center space-x-4">
-                            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-gray-600 hover:text-blue-600"
+                              onClick={() => setSelectedPostId(selectedPostId === post.id ? null : post.id)}
+                            >
                               <MessageCircle className="h-4 w-4 mr-1" />
                               {post.comments?.length || 0}
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-green-600">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-gray-600 hover:text-green-600"
+                              onClick={() => setSelectedPostId(selectedPostId === post.id ? null : post.id)}
+                            >
                               <Reply className="h-4 w-4 mr-1" />
                               Responder
                             </Button>
@@ -208,6 +220,14 @@ export default function Home() {
                       </div>
                     </CardContent>
                   </Card>
+                  
+                  {selectedPostId === post.id && (
+                    <CommentsSection 
+                      postId={post.id} 
+                      postAuthorId={post.author_id} 
+                    />
+                  )}
+                  </div>
                 ))}
               </div>
             )}
