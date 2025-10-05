@@ -35,7 +35,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { groups, getGroupStats, fetchApprovedGroups } = useGroups()
   const [groupStats, setGroupStats] = useState<Record<string, { postsCount: number; membersCount: number }>>({})
 
-  // Buscar apenas grupos aprovados quando o componente carregar
   useEffect(() => {
     if (user) {
       fetchApprovedGroups()
@@ -92,7 +91,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:block
       `}>
-        {/* Header */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -115,14 +113,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </div>
         </div>
 
-        {/* User Profile */}
         {user && (
           <div className="p-2 border-b border-gray-100">
             <UserDropdown />
           </div>
         )}
 
-        {/* Navigation */}
         <div className="p-4 space-y-2">
           <Link href="/">
             <Button variant="ghost" className="w-full justify-start h-12 text-left">
@@ -206,16 +202,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </div>
         </div>
 
-        {user && (
-          <div className="p-4 border-t border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-700">Notificações</span>
-              <NotificationBell />
-            </div>
-          </div>
-        )}
+  
 
-        {/* Logout Button */}
         {user && (
           <div className="p-4 border-t border-gray-100">
             <Button 

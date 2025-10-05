@@ -63,7 +63,7 @@ export function useGroups() {
   }, [])
 
 
-  const createGroup = async (group: GroupInsert) => {
+  const createGroup = useCallback(async (group: GroupInsert) => {
     try {
       const { data: userData, error: userError } = await supabase
         .from('users')
@@ -150,9 +150,9 @@ export function useGroups() {
       console.error('Error creating group:', err)
       return { data: null, error: err }
     }
-  }
+  }, [])
 
-  const updateGroup = async (id: string, updates: GroupUpdate) => {
+  const updateGroup = useCallback(async (id: string, updates: GroupUpdate) => {
     try {
       let { data, error } = await supabase
         .from('groups')
@@ -199,9 +199,9 @@ export function useGroups() {
       console.error('Error updating group:', err)
       return { data: null, error: err }
     }
-  }
+  }, [])
 
-  const deleteGroup = async (id: string) => {
+  const deleteGroup = useCallback(async (id: string) => {
     try {
       const { error } = await supabase
         .from('groups')
@@ -214,9 +214,9 @@ export function useGroups() {
     } catch (err) {
       return { error: err }
     }
-  }
+  }, [])
 
-  const approveGroup = async (id: string) => {
+  const approveGroup = useCallback(async (id: string) => {
     try {
       const result = await updateGroup(id, { status: 'approved' })
       
@@ -232,9 +232,9 @@ export function useGroups() {
     } catch (err) {
       return { data: null, error: err }
     }
-  }
+  }, [updateGroup])
 
-  const rejectGroup = async (id: string) => {
+  const rejectGroup = useCallback(async (id: string) => {
     try {
       const result = await updateGroup(id, { status: 'rejected' })
       
@@ -250,9 +250,9 @@ export function useGroups() {
     } catch (err) {
       return { data: null, error: err }
     }
-  }
+  }, [updateGroup])
 
-  const fetchGroupsByStatus = async (status: 'pending' | 'approved' | 'rejected') => {
+  const fetchGroupsByStatus = useCallback(async (status: 'pending' | 'approved' | 'rejected') => {
     try {
       setLoading(true)
       let { data, error } = await supabase
@@ -304,9 +304,9 @@ export function useGroups() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const fetchApprovedGroups = async () => {
+  const fetchApprovedGroups = useCallback(async () => {
     try {
       setLoading(true)
       let { data, error } = await supabase
@@ -356,7 +356,7 @@ export function useGroups() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const getGroupStats = useCallback(async (groupId: string) => {
     try {

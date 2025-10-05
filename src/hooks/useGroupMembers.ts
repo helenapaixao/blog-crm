@@ -147,7 +147,8 @@ export function useGroupMembers(groupId?: string) {
       fetchMembers()
       checkMembership()
     }
-  }, [groupId, fetchMembers, checkMembership])
+  }, [groupId])
+  
 
   return {
     members,
