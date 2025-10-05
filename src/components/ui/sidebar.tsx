@@ -36,15 +36,25 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   useEffect(() => {
     if (groups.length > 0) {
-      groups.forEach(async (group) => {
-        const stats = await getGroupStats(group.id)
-        setGroupStats(prev => ({
-          ...prev,
-          [group.id]: stats
-        }))
-      })
+      const fetchStats = async () => {
+        const statsPromises = groups.map(async (group) => {
+          const stats = await getGroupStats(group.id)
+          return { groupId: group.id, stats }
+        })
+        
+        const results = await Promise.all(statsPromises)
+        const newStats: Record<string, { postsCount: number; membersCount: number }> = {}
+        
+        results.forEach(({ groupId, stats }) => {
+          newStats[groupId] = stats
+        })
+        
+        setGroupStats(newStats)
+      }
+      
+      fetchStats()
     }
-  }, [groups, getGroupStats])
+  }, [groups])
 
   const getGroupIcon = (groupName: string) => {
     const name = groupName.toLowerCase()

@@ -60,7 +60,7 @@ export function useGroups() {
 
   useEffect(() => {
     fetchGroups()
-  }, [fetchGroups])
+  }, [])
 
 
   const createGroup = async (group: GroupInsert) => {
@@ -358,7 +358,7 @@ export function useGroups() {
     }
   }
 
-  const getGroupStats = async (groupId: string) => {
+  const getGroupStats = useCallback(async (groupId: string) => {
     try {
       const { count: postsCount } = await supabase
         .from('posts')
@@ -383,7 +383,7 @@ export function useGroups() {
         membersCount: 0
       }
     }
-  }
+  }, [])
 
   return {
     groups,

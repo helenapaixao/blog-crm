@@ -33,7 +33,7 @@ import { useRouter } from 'next/navigation'
 export default function Home() {
   const { user, isAdmin, signOut, loading, userProfile } = useAuth()
   const { posts, loading: postsLoading } = usePosts(undefined, 'published')
-  const { groups } = useGroups()
+  const { groups, loading: groupsLoading } = useGroups()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
@@ -45,7 +45,7 @@ export default function Home() {
   }, [loading, user, router])
 
 
-  if (loading || postsLoading) {
+  if (loading || postsLoading || groupsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
