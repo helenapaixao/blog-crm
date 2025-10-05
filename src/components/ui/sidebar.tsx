@@ -32,8 +32,15 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { user, signOut } = useAuth()
-  const { groups, getGroupStats } = useGroups()
+  const { groups, getGroupStats, fetchApprovedGroups } = useGroups()
   const [groupStats, setGroupStats] = useState<Record<string, { postsCount: number; membersCount: number }>>({})
+
+  // Buscar apenas grupos aprovados quando o componente carregar
+  useEffect(() => {
+    if (user) {
+      fetchApprovedGroups()
+    }
+  }, [user, fetchApprovedGroups])
 
   useEffect(() => {
     if (groups.length > 0) {

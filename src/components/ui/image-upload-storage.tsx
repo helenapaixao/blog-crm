@@ -80,8 +80,6 @@ export function ImageUploadStorage({
       const uniqueId = `upload-${Math.floor(Date.now() / 1000)}-${Math.floor(Math.random() * 1000000)}`
       const fileName = `${userId}/${uniqueId}.${fileExt}`
       
-      console.log('Uploading file:', fileName)
-      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
       
       const { data, error } = await supabase.storage
         .from('images')

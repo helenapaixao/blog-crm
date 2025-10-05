@@ -239,6 +239,97 @@ export default function AdminPage() {
             )}
           </TabsContent>
 
+          <TabsContent value="groups" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Grupos Aguardando Aprovação</h2>
+            </div>
+            
+            {pendingGroups.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <FolderOpen className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum grupo pendente</h3>
+                  <p className="text-gray-500">Todos os grupos foram processados.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {pendingGroups.map((group) => (
+                  <Card key={group.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-4">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={group.cover_image || ''} />
+                            <AvatarFallback>
+                              {group.name.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <h3 className="text-lg font-semibold">{group.name}</h3>
+                              <Badge variant="outline">/r/{group.slug}</Badge>
+                            </div>
+                            {group.description && (
+                              <p className="text-gray-600 text-sm mb-2">{group.description}</p>
+                            )}
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <div className="flex items-center space-x-2">
+                                <Avatar className="h-5 w-5">
+                                  <AvatarFallback className="text-xs">
+                                    {group.author.full_name?.charAt(0) || group.author.email.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span>por {group.author.full_name || group.author.email}</span>
+                              </div>
+                              <span>•</span>
+                              <span>{formatDate(group.created_at, 'dd/MM/yyyy')}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              approveGroup(group.id).then(result => {
+                                if (result.success) {
+                                  toast.success(`Grupo "${group.name}" aprovado com sucesso!`)
+                                } else {
+                                  toast.error(result.error || 'Erro ao aprovar grupo')
+                                }
+                              })
+                            }}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Aprovar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              if (confirm(`Tem certeza que deseja rejeitar o grupo "${group.name}"?`)) {
+                                rejectGroup(group.id).then(result => {
+                                  if (result.success) {
+                                    toast.success(`Grupo "${group.name}" rejeitado`)
+                                  } else {
+                                    toast.error(result.error || 'Erro ao rejeitar grupo')
+                                  }
+                                })
+                              }
+                            }}
+                          >
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Rejeitar
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
           <TabsContent value="published" className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Postagens Publicadas</h2>

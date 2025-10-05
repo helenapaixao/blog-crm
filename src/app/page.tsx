@@ -35,7 +35,7 @@ import { useRouter } from 'next/navigation'
 export default function Home() {
   const { user, isAdmin, signOut, loading, userProfile } = useAuth()
   const { posts, loading: postsLoading } = usePosts(undefined, 'published')
-  const { groups, loading: groupsLoading } = useGroups()
+  const { groups, loading: groupsLoading, fetchApprovedGroups } = useGroups()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
@@ -45,6 +45,12 @@ export default function Home() {
       router.push('/landing')
     }
   }, [loading, user, router])
+
+  useEffect(() => {
+    if (user) {
+      fetchApprovedGroups()
+    }
+  }, [user, fetchApprovedGroups])
 
 
   if (loading || postsLoading || groupsLoading) {
