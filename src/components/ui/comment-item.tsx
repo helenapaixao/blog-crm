@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { ClientOnly } from './client-only'
 import { CommentForm } from './comment-form'
 import { 
   DropdownMenu,
@@ -107,10 +108,12 @@ export function CommentItem({
               </span>
               
               <span className="text-sm text-gray-500">
-                {formatDistanceToNow(new Date(comment.created_at), { 
-                  addSuffix: true, 
-                  locale: ptBR 
-                })}
+                <ClientOnly fallback="há um momento">
+                  {formatDistanceToNow(new Date(comment.created_at), { 
+                    addSuffix: true, 
+                    locale: ptBR 
+                  })}
+                </ClientOnly>
               </span>
               
               {isPostAuthor && (

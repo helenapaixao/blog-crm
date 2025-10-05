@@ -77,7 +77,7 @@ export function ImageUploadStorage({
 
     try {
       const fileExt = file.name.split('.').pop()
-      const uniqueId = `upload-${Date.now()}-${Math.floor(Math.random() * 1000000)}`
+      const uniqueId = `upload-${Math.floor(Date.now() / 1000)}-${Math.floor(Math.random() * 1000000)}`
       const fileName = `${userId}/${uniqueId}.${fileExt}`
       
       console.log('Uploading file:', fileName)

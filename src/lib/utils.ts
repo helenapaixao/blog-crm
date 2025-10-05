@@ -16,15 +16,44 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
     }
     
     // Use consistent formatting to prevent hydration mismatches
+    // Always use UTC to avoid timezone differences between server and client
+    const utcDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000)
+    
     if (formatString === 'dd/MM/yyyy') {
-      const day = dateObj.getDate().toString().padStart(2, '0')
-      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0')
-      const year = dateObj.getFullYear()
+      const day = utcDate.getDate().toString().padStart(2, '0')
+      const month = (utcDate.getMonth() + 1).toString().padStart(2, '0')
+      const year = utcDate.getFullYear()
       return `${day}/${month}/${year}`
     }
     
+    if (formatString === 'dd MMM yyyy') {
+      const day = utcDate.getDate().toString().padStart(2, '0')
+      const month = utcDate.toLocaleDateString('pt-BR', { month: 'short' })
+      const year = utcDate.getFullYear()
+      return `${day} ${month} ${year}`
+    }
+    
+    if (formatString === 'dd MMMM yyyy') {
+      const day = utcDate.getDate().toString().padStart(2, '0')
+      const month = utcDate.toLocaleDateString('pt-BR', { month: 'long' })
+      const year = utcDate.getFullYear()
+      return `${day} ${month} ${year}`
+    }
+    
+    if (formatString === 'MMMM yyyy') {
+      const month = utcDate.toLocaleDateString('pt-BR', { month: 'long' })
+      const year = utcDate.getFullYear()
+      return `${month} ${year}`
+    }
+    
+    if (formatString === 'MMM yyyy') {
+      const month = utcDate.toLocaleDateString('pt-BR', { month: 'short' })
+      const year = utcDate.getFullYear()
+      return `${month} ${year}`
+    }
+    
     // For other formats, use date-fns with consistent locale
-    return format(dateObj, formatString, { locale: ptBR })
+    return format(utcDate, formatString, { locale: ptBR })
   } catch (error) {
     console.error('Error formatting date:', error)
     return 'Data inválida'
@@ -32,9 +61,12 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
 }
 
 // Generate a consistent unique ID that works in both server and client
+let idCounter = 0
 export function generateUniqueId(): string {
   // Use a simple counter-based approach for consistency
-  const timestamp = Date.now().toString(36)
-  const random = Math.random().toString(36).substring(2, 8)
-  return `${timestamp}-${random}`
+  // This prevents hydration mismatches by being deterministic
+  idCounter++
+  const timestamp = Math.floor(Date.now() / 1000).toString(36) // Use seconds instead of milliseconds
+  const counter = idCounter.toString(36)
+  return `${timestamp}-${counter}`
 }
