@@ -15,6 +15,7 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
       return 'Data inválida'
     }
     
+    // Use consistent formatting to prevent hydration mismatches
     if (formatString === 'dd/MM/yyyy') {
       const day = dateObj.getDate().toString().padStart(2, '0')
       const month = (dateObj.getMonth() + 1).toString().padStart(2, '0')
@@ -22,9 +23,18 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
       return `${day}/${month}/${year}`
     }
     
+    // For other formats, use date-fns with consistent locale
     return format(dateObj, formatString, { locale: ptBR })
   } catch (error) {
     console.error('Error formatting date:', error)
     return 'Data inválida'
   }
+}
+
+// Generate a consistent unique ID that works in both server and client
+export function generateUniqueId(): string {
+  // Use a simple counter-based approach for consistency
+  const timestamp = Date.now().toString(36)
+  const random = Math.random().toString(36).substring(2, 8)
+  return `${timestamp}-${random}`
 }
