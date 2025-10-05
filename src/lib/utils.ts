@@ -7,7 +7,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Safe date formatting that prevents hydration mismatches
 export function formatDate(date: string | Date, formatString: string = 'dd/MM/yyyy'): string {
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date
@@ -26,28 +25,33 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
       return `${day}/${month}/${year}`
     }
     
+    const monthNames = {
+      short: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+      long: ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+    }
+    
     if (formatString === 'dd MMM yyyy') {
       const day = utcDate.getDate().toString().padStart(2, '0')
-      const month = utcDate.toLocaleDateString('pt-BR', { month: 'short' })
+      const month = monthNames.short[utcDate.getMonth()]
       const year = utcDate.getFullYear()
       return `${day} ${month} ${year}`
     }
     
     if (formatString === 'dd MMMM yyyy') {
       const day = utcDate.getDate().toString().padStart(2, '0')
-      const month = utcDate.toLocaleDateString('pt-BR', { month: 'long' })
+      const month = monthNames.long[utcDate.getMonth()]
       const year = utcDate.getFullYear()
       return `${day} ${month} ${year}`
     }
     
     if (formatString === 'MMMM yyyy') {
-      const month = utcDate.toLocaleDateString('pt-BR', { month: 'long' })
+      const month = monthNames.long[utcDate.getMonth()]
       const year = utcDate.getFullYear()
       return `${month} ${year}`
     }
     
     if (formatString === 'MMM yyyy') {
-      const month = utcDate.toLocaleDateString('pt-BR', { month: 'short' })
+      const month = monthNames.short[utcDate.getMonth()]
       const year = utcDate.getFullYear()
       return `${month} ${year}`
     }
@@ -66,7 +70,9 @@ export function generateUniqueId(): string {
   // Use a simple counter-based approach for consistency
   // This prevents hydration mismatches by being deterministic
   idCounter++
-  const timestamp = Math.floor(Date.now() / 1000).toString(36) // Use seconds instead of milliseconds
+  // Use a fixed timestamp to prevent hydration mismatches
+  // In production, you might want to use a proper UUID library
+  const fixedTimestamp = '1a2b3c' // Fixed value to prevent hydration issues
   const counter = idCounter.toString(36)
-  return `${timestamp}-${counter}`
+  return `${fixedTimestamp}-${counter}`
 }

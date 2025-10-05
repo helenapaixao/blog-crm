@@ -36,7 +36,6 @@ export function useAdminNotifications(): UseAdminNotificationsResult {
     console.log('🔍 fetchPendingGroups called', { user: !!user, isAdmin })
     
     if (!user || !isAdmin) {
-      console.log('❌ Not admin or no user, skipping fetch')
       setPendingGroups([])
       setLoading(false)
       return
@@ -47,7 +46,6 @@ export function useAdminNotifications(): UseAdminNotificationsResult {
     
     try {
       console.log('📡 Fetching pending groups...')
-      // Primeiro, vamos tentar uma query mais simples
       const { data, error: fetchError } = await supabase
         .from('groups')
         .select('*')
@@ -55,13 +53,11 @@ export function useAdminNotifications(): UseAdminNotificationsResult {
         .order('created_at', { ascending: false })
 
       if (fetchError) {
-        console.error('❌ Supabase error:', fetchError)
         throw fetchError
       }
 
       console.log('✅ Raw data received:', data)
 
-      // Buscar informações dos autores separadamente
       const transformedData = await Promise.all((data || []).map(async (group) => {
         const { data: authorData } = await supabase
           .from('users')
@@ -75,10 +71,8 @@ export function useAdminNotifications(): UseAdminNotificationsResult {
         }
       }))
 
-      console.log('✅ Transformed data:', transformedData)
       setPendingGroups(transformedData)
     } catch (err) {
-      console.error('Error fetching pending groups:', err)
       setError(err instanceof Error ? err.message : 'Erro ao carregar grupos pendentes')
       setPendingGroups([])
     } finally {
