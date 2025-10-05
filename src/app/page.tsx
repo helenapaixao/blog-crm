@@ -142,7 +142,6 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* Posts Section */}
           <div className="px-6">
             <h3 className="text-lg font-semibold mb-4">Veja todos os posts da comunidade</h3>
             
@@ -158,7 +157,6 @@ export default function Home() {
                   <Card key={post.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex space-x-3">
-                        {/* Vote Buttons */}
                         <div className="flex flex-col items-center space-y-1">
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-50">
                             <ChevronUp className="h-4 w-4 text-gray-600 hover:text-orange-500" />

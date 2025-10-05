@@ -31,8 +31,8 @@ export function usePosts(groupId?: string, status?: string) {
           *,
           author:users(full_name, avatar_url),
           group:groups(name, slug),
-          likes(count),
-          comments(count)
+          likes(id, user_id),
+          comments(id, content, author_id)
         `)
         .order('created_at', { ascending: false })
 
@@ -64,7 +64,13 @@ export function usePosts(groupId?: string, status?: string) {
       const { data, error } = await supabase
         .from('posts')
         .insert(post)
-        .select()
+        .select(`
+          *,
+          author:users(full_name, avatar_url),
+          group:groups(name, slug),
+          likes(id, user_id),
+          comments(id, content, author_id)
+        `)
         .single()
 
       if (error) throw error

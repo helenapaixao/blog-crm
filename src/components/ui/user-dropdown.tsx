@@ -25,7 +25,7 @@ export function UserDropdown() {
         <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
           <div className="relative">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={userProfile?.avatar_url || ''} />
+              <AvatarImage src={userProfile?.avatar_url} />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                 {userProfile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
               </AvatarFallback>
