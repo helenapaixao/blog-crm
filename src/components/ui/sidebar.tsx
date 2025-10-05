@@ -87,20 +87,20 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
       <div className={`
         fixed lg:relative lg:translate-x-0 z-50
-        h-full w-80 bg-white border-r border-gray-200
+        h-full w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:block
       `}>
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900">RedditClone</h1>
-                <p className="text-xs text-gray-500">Comunidades</p>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">RedditClone</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Comunidades</p>
               </div>
             </div>
             <Button
@@ -155,7 +155,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Communities Section */}
         <div className="px-4 pb-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-700">Comunidades</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Comunidades</h3>
             <Badge variant="secondary" className="text-xs">
               {groups.length}
             </Badge>
@@ -168,7 +168,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 <Link key={group.id} href={`/group/${group.slug}`}>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-start h-auto p-3 text-left hover:bg-gray-50"
+                    className="w-full justify-start h-auto p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     <div className="flex items-center w-full">
                       <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -179,7 +179,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                           <div className="font-medium text-sm truncate">
                             {group.name}
                           </div>
-                          <div className="flex items-center space-x-2 text-xs text-gray-500">
+                          <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                             <span>{stats.postsCount} posts</span>
                             <span>•</span>
                             <span>{stats.membersCount} membros</span>
@@ -194,7 +194,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             })}
             
             {groups.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Nenhuma comunidade ainda</p>
                 <p className="text-xs">Crie a primeira!</p>
@@ -206,9 +206,9 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   
 
         {user && (
-          <div className="p-4 border-t border-gray-100 space-y-2">
+          <div className="p-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Tema</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300">Tema</span>
               <ThemeToggle size="sm" />
             </div>
             
