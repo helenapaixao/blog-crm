@@ -21,7 +21,6 @@ import {
   Heading2,
   Heading3
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
 
 interface RichTextEditorProps {
   content: string
@@ -94,7 +93,6 @@ export function RichTextEditor({ content, onChange, placeholder = 'Comece a escr
       }
     >
       <div className="border rounded-lg">
-        {/* Toolbar */}
         <div className="border-b p-2 flex flex-wrap gap-1">
           <Button
             type="button"
@@ -223,7 +221,6 @@ export function RichTextEditor({ content, onChange, placeholder = 'Comece a escr
           </Button>
         </div>
 
-        {/* Editor Content */}
         <EditorContent editor={editor} />
       </div>
     </ClientOnly>

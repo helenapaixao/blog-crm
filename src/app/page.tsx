@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CommentsSection } from '@/components/ui/comments-section'
+import { JoinGroupButton } from '@/components/ui/join-group-button'
 import { 
   Heart, 
   MessageCircle, 
@@ -133,12 +134,21 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <Link href="/dashboard/create">
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Criar post
-                    </Button>
-                  </Link>
+                  <div className="flex space-x-3">
+                    {groups.length > 0 && (
+                      <JoinGroupButton 
+                        groupId={groups[0].id}
+                        groupName={groups[0].name}
+                        membersCount={0}
+                      />
+                    )}
+                    <Link href="/dashboard/create">
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Criar post
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </CardContent>
             </Card>

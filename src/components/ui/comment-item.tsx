@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -58,13 +58,17 @@ export function CommentItem({
   submitting = false
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false)
+  
+  const toggleReplyForm = () => {
+    console.log('🔄 toggleReplyForm chamado - showReplyForm atual:', showReplyForm)
+    setShowReplyForm(prev => {
+      const newValue = !prev
+      console.log('🔄 toggleReplyForm - mudando de', prev, 'para', newValue)
+      return newValue
+    })
+  }
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(comment.content)
-
-  // Debug: Monitorar mudanças no estado
-  useEffect(() => {
-    console.log('🟡 CommentItem renderizado - showReplyForm:', showReplyForm, 'onReply:', !!onReply)
-  }, [showReplyForm, onReply])
 
   const isAuthor = comment.author_id === currentUserId
   const isPostAuthor = comment.author_id === postAuthorId
@@ -150,7 +154,6 @@ export function CommentItem({
           )}
         </div>
 
-        {/* Content */}
         {isEditing ? (
           <div className="space-y-3">
             <textarea
@@ -172,7 +175,6 @@ export function CommentItem({
           <p className="text-gray-700 mb-3">{comment.content}</p>
         )}
 
-        {/* Actions */}
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center space-x-1">
             <MessageCircle className="h-4 w-4 text-gray-400" />
@@ -195,11 +197,7 @@ export function CommentItem({
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              console.log('🔴 BOTÃO RESPONDER CLICADO!')
-              console.log('showReplyForm ANTES:', showReplyForm)
-              console.log('onReply existe:', !!onReply)
-              setShowReplyForm(!showReplyForm)
-              console.log('showReplyForm DEPOIS:', !showReplyForm)
+              toggleReplyForm()
             }}
             className="px-3 py-1 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
           >
@@ -208,10 +206,7 @@ export function CommentItem({
           </Button>
         </div>
 
-        {/* Debug Info */}
-        <div className="mt-2 p-2 bg-blue-100 text-xs">
-          Debug: showReplyForm = {showReplyForm.toString()}, onReply = {!!onReply}
-        </div>
+       
         
         {showReplyForm && onReply && (
           <div className="mt-4">
@@ -226,21 +221,11 @@ export function CommentItem({
             />
           </div>
         )}
+     
         
-        {showReplyForm && !onReply && (
-          <div className="mt-4 p-2 bg-red-100 text-sm">
-            ❌ showReplyForm=true mas onReply é null/undefined
-          </div>
-        )}
         
-        {!showReplyForm && onReply && (
-          <div className="mt-4 p-2 bg-yellow-100 text-sm">
-            ⚠️ onReply existe mas showReplyForm=false
-          </div>
-        )}
       </div>
 
-      {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
         <div className="space-y-3">
           {comment.replies.map((reply) => (

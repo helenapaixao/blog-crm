@@ -365,16 +365,14 @@ export function useGroups() {
         .select('*', { count: 'exact', head: true })
         .eq('group_id', groupId)
 
-      const { data: authors } = await supabase
-        .from('posts')
-        .select('author_id')
+      const { count: membersCount } = await supabase
+        .from('group_members')
+        .select('*', { count: 'exact', head: true })
         .eq('group_id', groupId)
-
-      const uniqueMembers = new Set(authors?.map(p => p.author_id) || []).size
 
       return {
         postsCount: postsCount || 0,
-        membersCount: uniqueMembers
+        membersCount: membersCount || 0
       }
     } catch (error) {
       console.error('Error fetching group stats:', error)

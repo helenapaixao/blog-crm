@@ -10,7 +10,7 @@ interface AnimatedCounterProps {
 }
 
 export function AnimatedCounter({ end, duration = 2000, suffix = '', className = '' }: AnimatedCounterProps) {
-  const [count, setCount] = useState(0) // Always start from 0 to prevent hydration mismatch
+  const [count, setCount] = useState(0)
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
@@ -43,7 +43,6 @@ export function AnimatedCounter({ end, duration = 2000, suffix = '', className =
     }
   }, [end, duration, isClient])
 
-  // Show the final value during SSR to prevent hydration mismatch
   if (!isClient) {
     return (
       <span className={className}>

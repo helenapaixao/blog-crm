@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { JoinGroupButton } from '@/components/ui/join-group-button'
 import { 
   Heart, 
   MessageCircle, 
@@ -228,6 +229,11 @@ export default function GroupPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <JoinGroupButton 
+                      groupId={group.id}
+                      groupName={group.name}
+                      membersCount={0}
+                    />
                     <Button 
                       variant="outline" 
                       size="sm"
