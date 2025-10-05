@@ -49,6 +49,7 @@ export default function GroupPage() {
   const { posts, loading: postsLoading } = usePosts()
 
   useEffect(() => {
+    setLoadingGroup(true)
     fetchGroup()
   }, [params.slug])
 
@@ -64,7 +65,14 @@ export default function GroupPage() {
       if (error) throw error
       console.log('Group data fetched:', data)
       console.log('Group cover image:', data?.cover_image)
+      console.log('Group cover image type:', typeof data?.cover_image)
+      console.log('Group cover image length:', data?.cover_image?.length)
       setGroup(data)
+      
+      // Testar se a imagem carrega
+      if (data?.cover_image) {
+        testImageLoad(data.cover_image)
+      }
     } catch (error) {
       console.error('Error fetching group:', error)
     } finally {
@@ -79,6 +87,21 @@ export default function GroupPage() {
     if (name.includes('futebol') || name.includes('esporte')) return <Globe className="h-4 w-4" />
     if (name.includes('jardinagem') || name.includes('plantas')) return <Leaf className="h-4 w-4" />
     return <Users className="h-4 w-4" />
+  }
+
+  const testImageLoad = (url: string) => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+        console.log('Image loaded successfully:', url)
+        resolve(true)
+      }
+      img.onerror = () => {
+        console.error('Image failed to load:', url)
+        resolve(false)
+      }
+      img.src = url
+    })
   }
 
   if (loadingGroup) {
@@ -179,16 +202,35 @@ export default function GroupPage() {
         <div className="flex-1">
           {/* Community Banner */}
           <div className="h-48 relative overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: group.cover_image 
-                  ? `url(${group.cover_image}?t=${Date.now()})` 
-                  : 'linear-gradient(to right, #1e40af, #3730a3)'
-              }}
-            >
-              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-            </div>
+            {group.cover_image ? (
+              <>
+                {/* Teste com tag img */}
+                <img 
+                  src={group.cover_image}
+                  alt="Group cover"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onLoad={() => console.log('IMG tag: Image loaded successfully')}
+                  onError={() => console.error('IMG tag: Image failed to load')}
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                {/* Debug: mostrar URL da imagem */}
+                <div className="absolute top-2 right-2 text-xs text-white bg-black bg-opacity-50 p-1 rounded">
+                  {group.cover_image ? 'Image loaded' : 'No image'}
+                </div>
+              </>
+            ) : (
+              <div 
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  background: 'linear-gradient(to right, #1e40af, #3730a3)'
+                }}
+              >
+                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                <div className="absolute top-2 right-2 text-xs text-white bg-black bg-opacity-50 p-1 rounded">
+                  No image - using gradient
+                </div>
+              </div>
+            )}
             <div className="absolute bottom-4 left-6">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">

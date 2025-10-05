@@ -18,6 +18,9 @@ import { X, Save, Send } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createPostSchema, type CreatePostFormData } from '@/lib/validations'
 
 export default function CreatePostPage() {
   const { user, loading: authLoading } = useAuth()
@@ -25,17 +28,28 @@ export default function CreatePostPage() {
   const { groups, loading: groupsLoading } = useGroups()
   const router = useRouter()
 
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    excerpt: '',
-    coverImage: '',
-    tags: [] as string[],
-    groupId: '',
-    status: 'draft' as 'draft' | 'pending'
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    reset,
+  } = useForm({
+    resolver: zodResolver(createPostSchema),
+    defaultValues: {
+      title: '',
+      content: '',
+      excerpt: '',
+      coverImage: '',
+      tags: [],
+      groupId: '',
+      status: 'draft' as const,
+    },
   })
 
   const [tagInput, setTagInput] = useState('')
+  const watchedTags = watch('tags')
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -43,28 +57,21 @@ export default function CreatePostPage() {
     }
   }, [authLoading, user, router])
 
-  const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'pending') => {
-    e.preventDefault()
-
-    if (!formData.title.trim() || !formData.content.trim() || !formData.groupId) {
-      toast.error('Título, conteúdo e grupo são obrigatórios')
-      return
-    }
-
+  const onSubmit = async (data: CreatePostFormData, status: 'draft' | 'pending') => {
     if (!user) {
       toast.error('Usuário não autenticado')
       return
     }
 
     const { error } = await createPost({
-      title: formData.title,
-      content: formData.content,
-      excerpt: formData.excerpt || null,
-      cover_image: formData.coverImage || null,
-      tags: formData.tags,
+      title: data.title,
+      content: data.content,
+      excerpt: data.excerpt || null,
+      cover_image: data.coverImage || null,
+      tags: data.tags,
       status,
       author_id: user.id,
-      group_id: formData.groupId,
+      group_id: data.groupId,
       published_at: status === 'pending' ? new Date().toISOString() : null
     })
 
@@ -76,25 +83,22 @@ export default function CreatePostPage() {
           ? 'Rascunho salvo com sucesso!' 
           : 'Postagem enviada para aprovação!'
       )
+      reset()
       router.push('/dashboard')
     }
   }
 
   const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()]
-      }))
+    const currentTags = watchedTags || []
+    if (tagInput.trim() && !currentTags.includes(tagInput.trim())) {
+      setValue('tags', [...currentTags, tagInput.trim()])
       setTagInput('')
     }
   }
 
   const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }))
+    const currentTags = watchedTags || []
+    setValue('tags', currentTags.filter(tag => tag !== tagToRemove))
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -134,7 +138,7 @@ export default function CreatePostPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={(e) => handleSubmit(e, 'draft')} className="space-y-6">
+        <form onSubmit={handleSubmit((data) => onSubmit(data as unknown as CreatePostFormData, 'draft'))} className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Informações Básicas</CardTitle>
@@ -147,30 +151,31 @@ export default function CreatePostPage() {
                 <Label htmlFor="title">Título *</Label>
                 <Input
                   id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  {...register('title')}
                   placeholder="Digite o título da postagem"
-                  required
                 />
+                {errors.title && (
+                  <p className="text-sm text-red-600">{errors.title.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Texto do post(opcional)</Label>
+                <Label htmlFor="excerpt">Resumo (opcional)</Label>
                 <Textarea
                   id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+                  {...register('excerpt')}
                   placeholder="Breve descrição da postagem..."
                   rows={3}
                 />
+                {errors.excerpt && (
+                  <p className="text-sm text-red-600">{errors.excerpt.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="group">Grupo Temático *</Label>
                 <Select
-                  value={formData.groupId}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, groupId: value }))}
-                  required
+                  onValueChange={(value) => setValue('groupId', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um grupo" />
@@ -183,15 +188,21 @@ export default function CreatePostPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {errors.groupId && (
+                  <p className="text-sm text-red-600">{errors.groupId.message}</p>
+                )}
               </div>
 
               <ImageUploadStorage
-                value={formData.coverImage}
-                onChange={(url) => setFormData(prev => ({ ...prev, coverImage: url }))}
+                value={watch('coverImage') || ''}
+                onChange={(url) => setValue('coverImage', url)}
                 label="Imagem de Capa"
                 placeholder="URL da imagem ou arraste um arquivo do seu PC"
                 userId={user?.id}
               />
+              {errors.coverImage && (
+                <p className="text-sm text-red-600">{errors.coverImage.message}</p>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="tags">Tags</Label>
@@ -207,9 +218,9 @@ export default function CreatePostPage() {
                     Adicionar
                   </Button>
                 </div>
-                {formData.tags.length > 0 && (
+                {(watchedTags || []).length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {formData.tags.map((tag, index) => (
+                    {(watchedTags || []).map((tag, index) => (
                       <Badge key={index} variant="secondary" className="flex items-center gap-1">
                         {tag}
                         <button
@@ -222,6 +233,9 @@ export default function CreatePostPage() {
                       </Badge>
                     ))}
                   </div>
+                )}
+                {errors.tags && (
+                  <p className="text-sm text-red-600">{errors.tags.message}</p>
                 )}
               </div>
             </CardContent>
@@ -236,10 +250,13 @@ export default function CreatePostPage() {
             </CardHeader>
             <CardContent>
               <RichTextEditor
-                content={formData.content}
-                onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                content={watch('content') || ''}
+                onChange={(content) => setValue('content', content)}
                 placeholder="Comece a escrever sua postagem..."
               />
+              {errors.content && (
+                <p className="text-sm text-red-600 mt-2">{errors.content.message}</p>
+              )}
             </CardContent>
           </Card>
 
@@ -247,16 +264,16 @@ export default function CreatePostPage() {
             <Button
               type="button"
               variant="outline"
-              onClick={(e) => handleSubmit(e, 'draft')}
-              disabled={createLoading}
+              onClick={handleSubmit((data) => onSubmit(data as unknown as CreatePostFormData, 'draft'))}
+              disabled={isSubmitting || createLoading}
             >
               <Save className="h-4 w-4 mr-2" />
               Salvar Rascunho
             </Button>
             <Button
               type="button"
-              onClick={(e) => handleSubmit(e, 'pending')}
-              disabled={createLoading}
+              onClick={handleSubmit((data) => onSubmit(data as unknown as CreatePostFormData, 'pending'))}
+              disabled={isSubmitting || createLoading}
             >
               <Send className="h-4 w-4 mr-2" />
               Enviar para Aprovação

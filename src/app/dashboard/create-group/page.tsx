@@ -12,19 +12,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Plus, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { ImageUploadStorage } from '@/components/ui/image-upload-storage'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createGroupSchema, type CreateGroupFormData } from '@/lib/validations'
 
 export default function CreateGroupPage() {
   const router = useRouter()
   const { user } = useAuth()
   const { createGroup, loading } = useGroups()
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    slug: '',
-    cover_image: ''
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    reset,
+  } = useForm<CreateGroupFormData>({
+    resolver: zodResolver(createGroupSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      slug: '',
+      coverImage: '',
+    },
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const [showSuccess, setShowSuccess] = useState(false)
+  const watchedName = watch('name')
 
   const generateSlug = (name: string) => {
     return name
@@ -38,32 +53,27 @@ export default function CreateGroupPage() {
   }
 
   const handleNameChange = (name: string) => {
-    setFormData(prev => ({
-      ...prev,
-      name,
-      slug: generateSlug(name)
-    }))
+    setValue('name', name)
+    setValue('slug', generateSlug(name))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const onSubmit = async (data: CreateGroupFormData) => {
     if (!user) {
       toast.error('Você precisa estar logado para criar um grupo')
       return
     }
-
-    setIsSubmitting(true)
     
     try {
+      console.log('Creating group with cover_image:', data.coverImage)
       const { data: createdGroup, error } = await createGroup({
-        name: formData.name,
-        description: formData.description || null,
-        slug: formData.slug,
-        cover_image: formData.cover_image || null,
+        name: data.name,
+        description: data.description || null,
+        slug: data.slug,
+        cover_image: data.coverImage || null,
         created_by: user.id,
         status: 'pending'
       })
+      console.log('Group created response:', createdGroup)
 
       if (error) {
         throw error
@@ -72,20 +82,13 @@ export default function CreateGroupPage() {
       setShowSuccess(true)
       toast.success('Grupo solicitado com sucesso! Aguarde a aprovação do administrador.')
       
-       
-      setFormData({
-        name: '',
-        description: '',
-        slug: '',
-        cover_image: ''
-      })
-      
+      reset()
 
       setTimeout(() => {
         if (createdGroup?.slug) {
           router.push(`/group/${createdGroup.slug}`)
-        } else if (formData.slug) {
-          router.push(`/group/${formData.slug}`)
+        } else if (data.slug) {
+          router.push(`/group/${data.slug}`)
         } else {
           router.push('/dashboard')
         }
@@ -94,8 +97,6 @@ export default function CreateGroupPage() {
     } catch (error) {
       console.error('Erro ao criar grupo:', error)
       toast.error('Erro ao solicitar grupo. Tente novamente.')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -154,17 +155,19 @@ export default function CreateGroupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome do Grupo *</Label>
                 <Input
                   id="name"
-                  value={formData.name}
+                  {...register('name')}
                   onChange={(e) => handleNameChange(e.target.value)}
                   placeholder="Ex: Tecnologia, Receitas, Viagens..."
-                  required
                   disabled={isSubmitting}
                 />
+                {errors.name && (
+                  <p className="text-sm text-red-600">{errors.name.message}</p>
+                )}
                 <p className="text-sm text-gray-500">
                   Escolha um nome claro e descritivo para o grupo
                 </p>
@@ -174,12 +177,14 @@ export default function CreateGroupPage() {
                 <Label htmlFor="description">Descrição</Label>
                 <Textarea
                   id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  {...register('description')}
                   placeholder="Descreva o propósito e tema do grupo..."
                   rows={4}
                   disabled={isSubmitting}
                 />
+                {errors.description && (
+                  <p className="text-sm text-red-600">{errors.description.message}</p>
+                )}
                 <p className="text-sm text-gray-500">
                   Explique o que o grupo representa e que tipo de conteúdo será publicado
                 </p>
@@ -187,12 +192,15 @@ export default function CreateGroupPage() {
 
               <div className="space-y-2">
                 <ImageUploadStorage
-                  value={formData.cover_image}
-                  onChange={(url) => setFormData(prev => ({ ...prev, cover_image: url }))}
+                  value={watch('coverImage') || ''}
+                  onChange={(url) => setValue('coverImage', url)}
                   label="Imagem de Capa do Grupo"
                   placeholder="URL da imagem ou arraste uma foto do seu PC"
                   userId={user?.id}
                 />
+                {errors.coverImage && (
+                  <p className="text-sm text-red-600">{errors.coverImage.message}</p>
+                )}
                 <p className="text-sm text-gray-500">
                   Adicione uma imagem representativa para o grupo (opcional)
                 </p>
@@ -202,14 +210,15 @@ export default function CreateGroupPage() {
                 <Label htmlFor="slug">Slug da URL *</Label>
                 <Input
                   id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                  {...register('slug')}
                   placeholder="exemplo-grupo"
-                  required
                   disabled={isSubmitting}
                 />
+                {errors.slug && (
+                  <p className="text-sm text-red-600">{errors.slug.message}</p>
+                )}
                 <p className="text-sm text-gray-500">
-                  URL do grupo: <span className="font-mono">/group/{formData.slug || 'exemplo-grupo'}</span>
+                  URL do grupo: <span className="font-mono">/group/{watch('slug') || 'exemplo-grupo'}</span>
                 </p>
               </div>
 
@@ -229,7 +238,7 @@ export default function CreateGroupPage() {
               <div className="flex gap-4">
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !formData.name || !formData.slug}
+                  disabled={isSubmitting || !watch('name') || !watch('slug')}
                   className="flex-1"
                 >
                   {isSubmitting ? 'Solicitando...' : 'Solicitar Grupo'}

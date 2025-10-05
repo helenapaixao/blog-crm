@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
+import { ClientOnly } from '@/components/ui/client-only'
 import { FeatureCard } from '@/components/ui/feature-card'
 import { 
   ArrowRight, 
@@ -181,10 +182,12 @@ export default function LandingPage() {
                   {stat.icon}
                 </div>
                 <div className="text-3xl font-bold text-gray-900 mb-2">
-                  <AnimatedCounter 
-                    end={stat.value.includes('+') ? parseInt(stat.value.replace('+', '')) : parseInt(stat.value.replace('%', ''))} 
-                    suffix={stat.value.includes('%') ? '%' : stat.value.includes('+') ? '+' : ''}
-                  />
+                  <ClientOnly fallback={<span>{stat.value}</span>}>
+                    <AnimatedCounter 
+                      end={stat.value.includes('+') ? parseInt(stat.value.replace('+', '')) : parseInt(stat.value.replace('%', ''))} 
+                      suffix={stat.value.includes('%') ? '%' : stat.value.includes('+') ? '+' : ''}
+                    />
+                  </ClientOnly>
                 </div>
                 <div className="text-gray-600">{stat.label}</div>
               </div>

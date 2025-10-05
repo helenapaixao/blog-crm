@@ -27,17 +27,33 @@ import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { updateProfileSchema, type UpdateProfileFormData } from '@/lib/validations'
+import { useProfile } from '@/hooks/useProfile'
 
 export default function ProfilePage() {
   const { user, signOut, loading: authLoading } = useAuth()
   const { posts } = usePosts()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [profileData, setProfileData] = useState({
-    full_name: '',
-    bio: '',
-    avatar_url: ''
+  
+  const { profile, loading, error, updateProfile } = useProfile(user)
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    reset,
+  } = useForm<UpdateProfileFormData>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: {
+      fullName: '',
+      bio: '',
+      avatarUrl: '',
+    },
   })
 
   useEffect(() => {
@@ -46,56 +62,29 @@ export default function ProfilePage() {
     }
   }, [authLoading, user, router])
 
+  // Atualizar o formulário quando o perfil for carregado
   useEffect(() => {
-    if (user) {
-      fetchProfile()
-    }
-  }, [user])
-
-  const fetchProfile = async () => {
-    if (!user) return
-
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('full_name, bio, avatar_url')
-        .eq('id', user.id)
-        .single()
-
-      if (error) throw error
-
-      setProfileData({
-        full_name: data.full_name || '',
-        bio: data.bio || '',
-        avatar_url: data.avatar_url || ''
+    if (profile) {
+      reset({
+        fullName: profile.full_name || '',
+        bio: profile.bio || '',
+        avatarUrl: profile.avatar_url || ''
       })
-    } catch (error) {
-      console.error('Error fetching profile:', error)
     }
-  }
+  }, [profile, reset])
 
-  const handleSaveProfile = async () => {
-    if (!user) return
+  const onSubmit = async (data: UpdateProfileFormData) => {
+    const result = await updateProfile({
+      full_name: data.fullName,
+      bio: data.bio,
+      avatar_url: data.avatarUrl
+    })
 
-    setLoading(true)
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({
-          full_name: profileData.full_name,
-          bio: profileData.bio,
-          avatar_url: profileData.avatar_url
-        })
-        .eq('id', user.id)
-
-      if (error) throw error
-
+    if (result.error) {
+      toast.error(`Erro ao atualizar perfil: ${result.error}`)
+    } else {
       toast.success('Perfil atualizado com sucesso!')
       setIsEditing(false)
-    } catch (error) {
-      toast.error('Erro ao atualizar perfil')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -145,6 +134,17 @@ export default function ProfilePage() {
         </div>
       </header>
 
+      {/* Error indicator */}
+      {error && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-800 text-sm">
+              ⚠️ Erro ao carregar perfil: {error}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Card */}
@@ -165,62 +165,76 @@ export default function ProfilePage() {
               <CardContent className="space-y-6">
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="h-24 w-24 mb-4">
-                    <AvatarImage src={profileData.avatar_url || user.user_metadata?.avatar_url || ''} />
+                    <AvatarImage src={watch('avatarUrl') || profile?.avatar_url || user.user_metadata?.avatar_url || ''} />
                     <AvatarFallback className="text-2xl">
-                      {profileData.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                      {watch('fullName')?.charAt(0) || profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   
                   {isEditing ? (
                     <div className="space-y-4 w-full">
-                      <div className="space-y-2">
-                        <Label htmlFor="full_name">Nome Completo</Label>
-                        <Input
-                          id="full_name"
-                          value={profileData.full_name}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
-                          placeholder="Seu nome completo"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="bio">Biografia</Label>
-                        <Textarea
-                          id="bio"
-                          value={profileData.bio}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
-                          placeholder="Conte um pouco sobre você..."
-                          rows={3}
-                        />
-                      </div>
+                      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="full_name">Nome Completo</Label>
+                          <Input
+                            id="full_name"
+                            {...register('fullName')}
+                            placeholder="Seu nome completo"
+                          />
+                          {errors.fullName && (
+                            <p className="text-sm text-red-600">{errors.fullName.message}</p>
+                          )}
+                        </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="avatar_url">URL do Avatar</Label>
-                        <Input
-                          id="avatar_url"
-                          value={profileData.avatar_url}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, avatar_url: e.target.value }))}
-                          placeholder="https://exemplo.com/avatar.jpg"
-                        />
-                      </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="bio">Biografia</Label>
+                          <Textarea
+                            id="bio"
+                            {...register('bio')}
+                            placeholder="Conte um pouco sobre você..."
+                            rows={3}
+                          />
+                          {errors.bio && (
+                            <p className="text-sm text-red-600">{errors.bio.message}</p>
+                          )}
+                        </div>
 
-                      <div className="flex space-x-2">
-                        <Button onClick={handleSaveProfile} disabled={loading} className="flex-1">
-                          <Save className="h-4 w-4 mr-2" />
-                          {loading ? 'Salvando...' : 'Salvar'}
-                        </Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)} className="flex-1">
-                          Cancelar
-                        </Button>
-                      </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="avatar_url">URL do Avatar</Label>
+                          <Input
+                            id="avatar_url"
+                            {...register('avatarUrl')}
+                            placeholder="https://exemplo.com/avatar.jpg"
+                          />
+                          {errors.avatarUrl && (
+                            <p className="text-sm text-red-600">{errors.avatarUrl.message}</p>
+                          )}
+                        </div>
+
+                        <div className="flex space-x-2">
+                          <Button type="submit" disabled={isSubmitting} className="flex-1">
+                            <Save className="h-4 w-4 mr-2" />
+                            {isSubmitting ? 'Salvando...' : 'Salvar'}
+                          </Button>
+                          <Button 
+                            type="button"
+                            variant="outline" 
+                            onClick={() => setIsEditing(false)}
+                            disabled={isSubmitting}
+                            className="flex-1"
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      </form>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       <h3 className="text-xl font-semibold">
-                        {profileData.full_name || 'Usuário'}
+                        {profile?.full_name || 'Usuário'}
                       </h3>
                       <p className="text-gray-600">
-                        {profileData.bio || 'Nenhuma biografia adicionada ainda.'}
+                        {profile?.bio || 'Nenhuma biografia adicionada ainda.'}
                       </p>
                     </div>
                   )}
