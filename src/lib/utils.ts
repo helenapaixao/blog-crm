@@ -58,7 +58,6 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
       return `${month} ${year}`
     }
     
-    // For other formats, use date-fns with consistent locale
     return format(utcDate, formatString, { locale: ptBR })
   } catch (error) {
     console.error('Error formatting date:', error)
@@ -66,15 +65,11 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
   }
 }
 
-// Generate a consistent unique ID that works in both server and client
 let idCounter = 0
 export function generateUniqueId(): string {
-  // Use a simple counter-based approach for consistency
-  // This prevents hydration mismatches by being deterministic
+
   idCounter++
-  // Use a fixed timestamp to prevent hydration mismatches
-  // In production, you might want to use a proper UUID library
-  const fixedTimestamp = '1a2b3c' // Fixed value to prevent hydration issues
+  const fixedTimestamp = '1a2b3c'
   const counter = idCounter.toString(36)
   return `${fixedTimestamp}-${counter}`
 }
