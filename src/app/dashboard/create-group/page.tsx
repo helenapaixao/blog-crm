@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useGroups } from '@/hooks/useGroups'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,16 +15,19 @@ import { ImageUploadStorage } from '@/components/ui/image-upload-storage'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createGroupSchema, type CreateGroupFormData } from '@/lib/validations'
+import { Database } from '@/lib/supabase'
+
+type GroupInsert = Database['public']['Tables']['groups']['Insert']
 
 export default function CreateGroupPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const { createGroup, loading } = useGroups()
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
     watch,
     reset,
@@ -57,14 +60,89 @@ export default function CreateGroupPage() {
     setValue('slug', generateSlug(name))
   }
 
+  const createGroup = async (group: GroupInsert) => {
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', group.created_by)
+        .single()
+
+      if (userError && userError.code === 'PGRST116') {
+        const { data: authUser } = await supabase.auth.getUser()
+        
+        if (authUser.user) {
+          const { error: createUserError } = await supabase
+            .from('users')
+            .insert({
+              id: authUser.user.id,
+              email: authUser.user.email || '',
+              full_name: authUser.user.user_metadata?.full_name || null,
+              role: 'user'
+            })
+
+          if (createUserError) {
+            throw createUserError
+          }
+        }
+      } else if (userError) {
+        throw userError
+      }
+
+      let groupData = {
+        ...group,
+        status: group.status || 'pending'
+      }
+
+      let { data, error } = await supabase
+        .from('groups')
+        .insert(groupData)
+        .select()
+        .single()
+
+      if (error && error.code === 'PGRST204') {
+        const groupWithoutStatus = {
+          name: groupData.name,
+          description: groupData.description,
+          slug: groupData.slug,
+          cover_image: groupData.cover_image,
+          created_by: groupData.created_by
+        }
+        
+        const result = await supabase
+          .from('groups')
+          .insert(groupWithoutStatus)
+          .select()
+          .single()
+
+        if (result.error) {
+          throw result.error
+        }
+
+        data = {
+          ...result.data,
+          status: 'approved' as const
+        }
+        error = null
+      } else if (error) {
+        throw error
+      }
+      
+      return { data, error: null }
+    } catch (err) {
+      return { data: null, error: err }
+    }
+  }
+
   const onSubmit = async (data: CreateGroupFormData) => {
     if (!user) {
       toast.error('Você precisa estar logado para criar um grupo')
       return
     }
     
+    setIsSubmittingForm(true)
+    
     try {
-      console.log('Creating group with cover_image:', data.coverImage)
       const { data: createdGroup, error } = await createGroup({
         name: data.name,
         description: data.description || null,
@@ -73,7 +151,6 @@ export default function CreateGroupPage() {
         created_by: user.id,
         status: 'pending'
       })
-      console.log('Group created response:', createdGroup)
 
       if (error) {
         throw error
@@ -97,6 +174,8 @@ export default function CreateGroupPage() {
     } catch (error) {
       console.error('Erro ao criar grupo:', error)
       toast.error('Erro ao solicitar grupo. Tente novamente.')
+    } finally {
+      setIsSubmittingForm(false)
     }
   }
 
@@ -163,7 +242,7 @@ export default function CreateGroupPage() {
                   {...register('name')}
                   onChange={(e) => handleNameChange(e.target.value)}
                   placeholder="Ex: Tecnologia, Receitas, Viagens..."
-                  disabled={isSubmitting}
+                  disabled={isSubmittingForm}
                 />
                 {errors.name && (
                   <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -180,7 +259,7 @@ export default function CreateGroupPage() {
                   {...register('description')}
                   placeholder="Descreva o propósito e tema do grupo..."
                   rows={4}
-                  disabled={isSubmitting}
+                  disabled={isSubmittingForm}
                 />
                 {errors.description && (
                   <p className="text-sm text-red-600">{errors.description.message}</p>
@@ -212,7 +291,7 @@ export default function CreateGroupPage() {
                   id="slug"
                   {...register('slug')}
                   placeholder="exemplo-grupo"
-                  disabled={isSubmitting}
+                  disabled={isSubmittingForm}
                 />
                 {errors.slug && (
                   <p className="text-sm text-red-600">{errors.slug.message}</p>
@@ -238,16 +317,16 @@ export default function CreateGroupPage() {
               <div className="flex gap-4">
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !watch('name') || !watch('slug')}
+                  disabled={isSubmittingForm || !watch('name') || !watch('slug')}
                   className="flex-1"
                 >
-                  {isSubmitting ? 'Solicitando...' : 'Solicitar Grupo'}
+                  {isSubmittingForm ? 'Solicitando...' : 'Solicitar Grupo'}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => router.back()}
-                  disabled={isSubmitting}
+                  disabled={isSubmittingForm}
                 >
                   Cancelar
                 </Button>
