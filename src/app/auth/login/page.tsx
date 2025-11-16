@@ -41,7 +41,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isMounted, setIsMounted] = useState(false)
-  const { signIn, user, loading: authLoading } = useAuth()
+  const { signIn } = useAuth()
   const router = useRouter()
 
   const {
