@@ -43,17 +43,21 @@ export function AnimatedCounter({ end, duration = 2000, suffix = '', className =
     }
   }, [end, duration, isClient])
 
+  const formatNumber = (num: number) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+
   if (!isClient) {
     return (
       <span className={className}>
-        {end.toLocaleString()}{suffix}
+        {formatNumber(end)}{suffix}
       </span>
     )
   }
 
   return (
     <span className={className}>
-      {count.toLocaleString()}{suffix}
+      {formatNumber(count)}{suffix}
     </span>
   )
 }

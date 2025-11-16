@@ -13,9 +13,6 @@ export function formatDate(date: string | Date, formatString: string = 'dd/MM/yy
     if (isNaN(dateObj.getTime())) {
       return 'Data inválida'
     }
-    
-    // Use consistent formatting to prevent hydration mismatches
-    // Always use UTC to avoid timezone differences between server and client
     const utcDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000)
     
     if (formatString === 'dd/MM/yyyy') {

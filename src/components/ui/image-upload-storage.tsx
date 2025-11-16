@@ -8,6 +8,7 @@ import { Card, CardContent } from './card'
 import { Upload, X, Image as ImageIcon, Copy, Check, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
+import { generateUniqueId } from '@/lib/utils'
 
 interface ImageUploadStorageProps {
   value: string
@@ -77,9 +78,8 @@ export function ImageUploadStorage({
 
     try {
       const fileExt = file.name.split('.').pop()
-      const timestamp = Date.now().toString(36)
-      const randomPart = Math.random().toString(36).substr(2, 9)
-      const uniqueId = `upload-${timestamp}-${randomPart}`
+      // Use generateUniqueId to prevent hydration mismatches
+      const uniqueId = `upload-${generateUniqueId()}`
       const fileName = `${userId}/${uniqueId}.${fileExt}`
       
       
