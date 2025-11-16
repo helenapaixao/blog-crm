@@ -116,8 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error }
       }
       
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
       return { error: null }
     } catch (error) {
       return { error: error as AuthError }
