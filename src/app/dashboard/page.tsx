@@ -22,7 +22,7 @@ import {
   LogOut
 } from 'lucide-react'
 import Link from 'next/link'
-import { formatDate } from '@/lib/utils'
+import { formatDate, capitalizeFirstLetter } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -170,7 +170,7 @@ export default function DashboardPage() {
             </Avatar>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Olá, {user.user_metadata?.full_name || 'Usuário'}!
+                Olá, {capitalizeFirstLetter(user.user_metadata?.full_name) || 'Usuário'}!
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 Gerencie suas postagens e acompanhe o status de publicação.

@@ -40,6 +40,7 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [isMounted, setIsMounted] = useState(false)
   const { signUp } = useAuth()
   const router = useRouter()
 
@@ -56,12 +57,17 @@ export default function RegisterPage() {
   const password = watch('password')
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+  }, [isMounted])
 
   const onSubmit = async (data: RegisterFormData) => {
     setLoading(true)
@@ -92,20 +98,29 @@ export default function RegisterPage() {
         }}
       />
       
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-400/20 rounded-full animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${10 + Math.random() * 10}s`
-            }}
-          />
-        ))}
-      </div>
+      {isMounted && (
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          {[...Array(15)].map((_, i) => {
+            const left = ((i * 7 + 13) % 100)
+            const top = ((i * 11 + 17) % 100)
+            const delay = ((i * 3) % 5)
+            const duration = 10 + ((i * 2) % 10)
+            
+            return (
+              <div
+                key={i}
+                className="absolute w-2 h-2 bg-blue-400/20 rounded-full animate-float"
+                style={{
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`
+                }}
+              />
+            )
+          })}
+        </div>
+      )}
 
       <div className="max-w-md w-full space-y-8 relative z-10">
         <FadeIn delay={0}>

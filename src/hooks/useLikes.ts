@@ -20,16 +20,12 @@ export function useLikes(postId: string) {
       setLoading(true)
       const { data, error } = await supabase
         .from('likes')
-        .select(`
-          *,
-          user:users(full_name, avatar_url)
-        `)
+        .select('id, user_id, post_id')
         .eq('post_id', postId)
 
       if (error) throw error
       setLikes(data || [])
       
-      // Check if current user liked this post
       if (user) {
         const userLike = data?.find(like => like.user_id === user.id)
         setUserLiked(!!userLike)
@@ -46,7 +42,6 @@ export function useLikes(postId: string) {
 
     try {
       if (userLiked) {
-        // Remove like
         const { error } = await supabase
           .from('likes')
           .delete()
@@ -57,17 +52,13 @@ export function useLikes(postId: string) {
         setUserLiked(false)
         setLikes(prev => prev.filter(like => like.user_id !== user.id))
       } else {
-        // Add like
         const { data, error } = await supabase
           .from('likes')
           .insert({
             post_id: postId,
             user_id: user.id,
           })
-          .select(`
-            *,
-            user:users(full_name, avatar_url)
-          `)
+          .select('id, user_id, post_id')
           .single()
 
         if (error) throw error

@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useComments } from '@/hooks/useComments'
 import { useLikes } from '@/hooks/useLikes'
-import { usePosts } from '@/hooks/usePosts'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -51,7 +50,6 @@ export default function PostPage() {
   
   const { comments, loading: commentsLoading } = useComments(params.id as string)
   const { likes, userLiked, likesCount, toggleLike } = useLikes(params.id as string)
-  const { deletePost } = usePosts()
 
   useEffect(() => {
     fetchPost()
@@ -91,12 +89,20 @@ export default function PostPage() {
   const handleConfirmDelete = async () => {
     if (!post) return
 
-    const { error } = await deletePost(post.id)
-    if (error) {
-      toast.error('Erro ao deletar postagem: ' + (error as any).message)
-    } else {
-      toast.success('Postagem deletada com sucesso!')
-      router.push('/dashboard')
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', post.id)
+
+      if (error) {
+        toast.error('Erro ao deletar postagem: ' + error.message)
+      } else {
+        toast.success('Postagem deletada com sucesso!')
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      toast.error('Erro ao deletar postagem')
     }
   }
 
@@ -112,28 +118,6 @@ export default function PostPage() {
     }
   }
 
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-      </div>
-    )
-  }
-
-  if (!post) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Postagem não encontrada</h1>
-          <p className="text-gray-600 mb-4">A postagem que você está procurando não existe ou não está publicada.</p>
-          <Link href="/">
-            <Button>Voltar ao início</Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,7 +149,20 @@ export default function PostPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Post Header */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : !post ? (
+          <div className="text-center py-20">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Postagem não encontrada</h1>
+            <p className="text-gray-600 mb-4">A postagem que você está procurando não existe ou não está publicada.</p>
+            <Link href="/">
+              <Button>Voltar ao início</Button>
+            </Link>
+          </div>
+        ) : (
+          <>
         <div className="mb-8">
           <div className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
             <Link href={`/group/${post.group.slug}`}>
@@ -250,7 +247,6 @@ export default function PostPage() {
           </div>
         </div>
 
-        {/* Cover Image */}
         {post.cover_image && (
           <div className="mb-8">
             <img
@@ -261,14 +257,12 @@ export default function PostPage() {
           </div>
         )}
 
-        {/* Post Content */}
         <Card className="mb-8">
           <CardContent className="prose prose-lg max-w-none py-8">
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </CardContent>
         </Card>
 
-        {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
@@ -285,20 +279,18 @@ export default function PostPage() {
           </div>
         )}
 
-        <Separator className="my-8" />
+            <Separator className="my-8" />
+
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <CommentsSection 
+                postId={post.id} 
+                postAuthorId={post.author_id}
+              />
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Comments Section */}
-      {post && (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <CommentsSection 
-            postId={post.id} 
-            postAuthorId={post.author_id}
-          />
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={closeDeleteModal}

@@ -7,6 +7,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function capitalizeFirstLetter(str: string | null | undefined): string {
+  if (!str) return ''
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
 export function formatDate(date: string | Date, formatString: string = 'dd/MM/yyyy'): string {
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date
