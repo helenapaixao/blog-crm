@@ -14,7 +14,6 @@ import { toast } from 'sonner'
 import { Users, Mail, Lock, ArrowRight, Sparkles, AlertCircle } from 'lucide-react'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
 
-// Componente para animações de entrada
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) {
   const [isVisible, setIsVisible] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -82,7 +81,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
-      {/* Background animated gradient */}
       <div 
         className="fixed inset-0 opacity-30 pointer-events-none"
         style={{
@@ -91,7 +89,6 @@ export default function LoginPage() {
         }}
       />
       
-      {/* Floating particles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {[...Array(15)].map((_, i) => (
           <div
